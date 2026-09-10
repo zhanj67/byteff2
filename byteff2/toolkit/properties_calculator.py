@@ -14,9 +14,13 @@
 
 import argparse
 import json
+import logging
 import os
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional
+
+from rdkit import Chem
 
 from byteff2.toolkit.protocol import (
     DensityProtocol,
@@ -27,6 +31,87 @@ from byteff2.toolkit.protocol import (
 from bytemol.utils import setup_default_logging
 
 logger = setup_default_logging()
+
+
+class PropertiesLogger:
+    """Enhanced logging for PropertiesCalculator with progress tracking."""
+
+    def __init__(self, base_dir: Path, verbose: bool = True):
+        self.base_dir = Path(base_dir)
+        self.log_file = self.base_dir / "properties_calculator.log"
+        self.verbose = verbose
+        self.progress = 0
+
+    def setup(self):
+        """Setup file and console logging."""
+        self.base_dir.mkdir(parents=True, exist_ok=True)
+
+        # File handler
+        file_handler = logging.FileHandler(str(self.log_file), mode='a')
+        file_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    def log_section(self, title: str, progress: int = 0):
+        """Log a section header with progress."""
+        self.progress = progress
+        line = "=" * 80
+        logger.info(line)
+        logger.info(f"{title} [{progress}%]")
+        logger.info(line)
+        if self.verbose:
+            print(f"\n{line}\n{title} [{progress}%]\n{line}")
+
+    def log_step(self, step: str, details: str = ""):
+        """Log a workflow step."""
+        msg = f"  ✓ {step}"
+        if details:
+            msg += f": {details}"
+        logger.info(msg)
+        if self.verbose:
+            print(msg)
+
+    def log_result(self, name: str, value: float, unit: str = ""):
+        """Log a calculated result."""
+        msg = f"    {name:30s}: {value:12.6f} {unit}".rstrip()
+        logger.info(msg)
+        if self.verbose:
+            print(msg)
+
+    def log_error(self, msg: str):
+        """Log an error."""
+        logger.error(f"✗ {msg}")
+        if self.verbose:
+            print(f"✗ {msg}", file=sys.stderr)
+
+    def log_summary(self, summary_dict: Dict):
+        """Log a formatted summary."""
+        line = "=" * 80
+        logger.info(line)
+        logger.info("CALCULATION SUMMARY")
+        logger.info(line)
+        for key, value in summary_dict.items():
+            if isinstance(value, dict):
+                logger.info(f"\n{key}:")
+                for k, v in value.items():
+                    logger.info(f"  {k:30s}: {v}")
+            else:
+                logger.info(f"{key:30s}: {value}")
+        if self.verbose:
+            print("\n" + line)
+            print("CALCULATION SUMMARY")
+            print(line)
+            for key, value in summary_dict.items():
+                if isinstance(value, dict):
+                    print(f"\n{key}:")
+                    for k, v in value.items():
+                        print(f"  {k:30s}: {v}")
+                else:
+                    print(f"{key:30s}: {value}")
 
 
 class PropertiesCalculator:
@@ -60,20 +145,47 @@ class PropertiesCalculator:
     ANION_DATABASE = {
         "PF6": "F[P-](F)(F)(F)(F)F",
         "BF4": "F[B-](F)(F)F",
-        "ClO4": "[ClO4-]",
-        "TFSI": "CC(=O)N(S(=O)(=O)C(F)(F)F)S(=O)(=O)C(F)(F)F",
-        "OTf": "CS(=O)(=O)[O-]",
-        "FSI": "FS(=O)(=O)[N-]S(=O)(=O)F",  # Fluorosulfonyl imide
+        "ClO4": "[O-][Cl](=O)(=O)=O",
+        "TFSI": "[N-](S(=O)(=O)C(F)(F)F)S(=O)(=O)C(F)(F)F",
+        "OTf": "[O-]S(=O)(=O)C(F)(F)F",
+        "FSI": "FS(=O)(=O)[N-]S(=O)(=O)F",
     }
 
-    # Solvent SMILES database (populate from CSV later)
+    # Solvent SMILES. Entries below are transcribed from Supplementary Table 1
+    # ("Molecule Abbreviations") of the ByteFF2 paper SI, which is the naming
+    # authority for this force field's training set.
     SOLVENT_DATABASE = {
-        "DMC": "COC(=O)OC",
-        "EC": "O=C1OCCO1",
-        "EMC": "CCOC(=O)OC",
-        "DEC": "CCOC(=O)OCC",
-        "PC": "CC(=O)OC1CCOC1=O",
-        "H2O": "O",
+        # carbonates
+        "EC": "C1COC(=O)O1",                    # ethylene carbonate
+        "DMC": "COC(=O)OC",                     # dimethyl carbonate
+        "EMC": "CCOC(=O)OC",                    # ethyl methyl carbonate
+        "PC": "CC1COC(=O)O1",                   # propylene carbonate
+        "FEC": "C1C(OC(=O)O1)F",                # fluoroethylene carbonate
+        "DFEC": "O1[C@H](F)[C@@H](F)OC1=O",     # difluoroethylene carbonate
+        "TFPC": "C1C(OC(=O)O1)C(F)(F)F",        # 4-(trifluoromethyl)-1,3-dioxolan-2-one
+        "FEMC": "COC(=O)OCC(F)(F)F",            # methyl 2,2,2-trifluoroethyl carbonate
+        # esters / lactones
+        "MA": "CC(=O)OC",                       # methyl acetate
+        "EA": "CCOC(=O)C",                      # ethyl acetate
+        "GBL": "C1CC(=O)OC1",                   # gamma-butyrolactone
+        "HAC": "CC(=O)O",                       # acetic acid
+        # ethers
+        "TGDME": "COCCOCCOCCOC",                # triethylene glycol dimethyl ether
+        "EMP": "COCCCOCC",                      # 1-methoxy-3-ethoxypropane
+        "F3EMP": "COCCCOCC(F)(F)F",             # 1-methoxy-3-(2,2,2-trifluoroethoxy)propane
+        # phosphate
+        "TFP": "O=P(OCC(F)(F)F)(OCC(F)(F)F)OCC(F)(F)F",  # tris(2,2,2-trifluoroethyl) phosphate
+        # others
+        "AN": "CC#N",                           # acetonitrile
+        "ACE": "CC(C)=O",                       # acetone
+        "NOM": "C[N+](=O)[O-]",                 # nitromethane
+        "BZ": "c1ccccc1",                       # benzene
+        "Ani": "Nc1ccccc1",                     # aniline
+        "EtCl": "CCCl",                         # ethyl chloride
+        "EtSH": "CCS",                          # ethanethiol
+        # not in the SI table, but standard and widely used
+        "DEC": "CCOC(=O)OCC",                   # diethyl carbonate
+        "H2O": "O",                             # water
     }
 
     def __init__(
@@ -85,6 +197,7 @@ class PropertiesCalculator:
         salt_to_solvent_ratio_str: Optional[str] = None,
         temperature: float = 298.0,
         base_dir: str = "./md_simulations",
+        verbose: bool = True,
     ):
         """
         Initialize the properties calculator with simplified input.
@@ -113,6 +226,15 @@ class PropertiesCalculator:
         self.temperature = temperature
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        self.verbose = verbose
+
+        # Setup logging
+        self.logger = PropertiesLogger(self.base_dir, verbose=verbose)
+        self.logger.setup()
+
+        # Log initialization
+        self.logger.log_section("PropertiesCalculator Initialization", progress=0)
+        self.logger.log_step(f"Solvent: {solvent}, Anion: {anion}, Li count: {li_count}")
 
         # Validate and get SMILES
         self.solvent_smiles = self._get_solvent_smiles()
@@ -126,6 +248,9 @@ class PropertiesCalculator:
 
         # Build SMILES dictionary
         self.smiles = self._build_smiles()
+
+        self.logger.log_step(f"Components: {self.components}")
+        self.logger.log_step(f"Working directory: {self.base_dir}")
 
         self.results = {}
 
@@ -187,18 +312,26 @@ class PropertiesCalculator:
             self.anion: self.anion_smiles,
         }
 
+    def _count_atoms(self) -> int:
+        """Exact atom count of the requested composition, hydrogens included."""
+        total = 0
+        for name, count in self.components.items():
+            mol = Chem.AddHs(Chem.MolFromSmiles(self.smiles[name]))
+            total += count * mol.GetNumAtoms()
+        return total
+
     def _create_config(self, protocol_name: str, params_dir: str, output_dir: str) -> dict:
         """Create configuration for a protocol."""
-        # Calculate natoms from components
-        total_atoms = sum(self.components.values()) * 10  # Rough estimate: ~10 atoms per molecule avg
-
+        # protocol.search_mixture treats `components` as a ratio and scales it up
+        # until it reaches `natoms`. Passing the composition's exact atom count
+        # makes that scale factor land on 1, preserving the requested counts.
         config = {
             "protocol": protocol_name,
             "params_dir": params_dir,
             "output_dir": output_dir,
             "working_dir": str(self.base_dir / f"{protocol_name.lower()}_working_dir"),
             "temperature": int(self.temperature),
-            "natoms": total_atoms,
+            "natoms": self._count_atoms(),
             "components": self.components,
             "smiles": self.smiles,
         }
@@ -333,46 +466,67 @@ class PropertiesCalculator:
         properties_lower = [p.lower() for p in properties]
         all_results = {}
 
+        self.logger.log_section(
+            f"Starting Property Calculations: {', '.join(properties_lower)}",
+            progress=10
+        )
+
         # Density
         if "density" in properties_lower:
             try:
+                self.logger.log_step("Calculating density...")
                 all_results["density"] = self.calculate_density()
+                if all_results["density"]:
+                    density_val = all_results["density"].get("density", 0)
+                    self.logger.log_result("Density", density_val, "g/mL")
             except Exception as e:
-                logger.error(f"Failed to calculate density: {e}")
+                self.logger.log_error(f"Failed to calculate density: {e}")
 
         # Transport (conductivity + viscosity)
         if any(p in properties_lower for p in ["conductivity", "viscosity"]):
             try:
+                self.logger.log_step("Calculating transport properties...")
                 transport_result = self.calculate_transport()
                 all_results["transport"] = transport_result
                 if "conductivity" in properties_lower:
-                    all_results["conductivity"] = transport_result.get("conductivity_onsager")
+                    cond = transport_result.get("conductivity_onsager", 0)
+                    all_results["conductivity"] = cond
+                    self.logger.log_result("Conductivity (Onsager)", cond, "mS/cm")
                 if "viscosity" in properties_lower:
-                    all_results["viscosity"] = transport_result.get("viscosity")
+                    visc = transport_result.get("viscosity", 0)
+                    all_results["viscosity"] = visc
+                    self.logger.log_result("Viscosity", visc, "cP")
             except Exception as e:
-                logger.error(f"Failed to calculate transport properties: {e}")
+                self.logger.log_error(f"Failed to calculate transport properties: {e}")
 
         # Dielectric
         if "dielectric" in properties_lower:
             try:
+                self.logger.log_step("Calculating dielectric constant...")
                 all_results["dielectric"] = self.calculate_dielectric()
+                if all_results["dielectric"]:
+                    diel_val = all_results["dielectric"].get("dielectric", 0)
+                    self.logger.log_result("Dielectric Constant", diel_val)
             except Exception as e:
-                logger.error(f"Failed to calculate dielectric constant: {e}")
+                self.logger.log_error(f"Failed to calculate dielectric constant: {e}")
 
         # Compressibility
         if "compressibility" in properties_lower:
             try:
+                self.logger.log_step("Calculating compressibility...")
                 all_results["compressibility"] = self.calculate_compressibility()
             except Exception as e:
-                logger.error(f"Failed to calculate compressibility: {e}")
+                self.logger.log_error(f"Failed to calculate compressibility: {e}")
 
-        # Save summary
+        # Save and display summary
+        self.logger.log_section("Calculation Complete", progress=100)
         self._save_summary(all_results)
+        self._display_summary(all_results)
 
         return all_results
 
     def _save_summary(self, results: dict) -> None:
-        """Save results summary."""
+        """Save results summary to JSON."""
         summary = {
             "solvent": self.solvent,
             "anion": self.anion,
@@ -386,7 +540,40 @@ class PropertiesCalculator:
         summary_file = self.base_dir / "summary.json"
         with open(summary_file, "w") as f:
             json.dump(summary, f, indent=2)
-        logger.info(f"Saved summary to {summary_file}")
+        self.logger.log_step(f"Saved summary to {summary_file}")
+
+    def _display_summary(self, results: dict) -> None:
+        """Display formatted results summary."""
+        summary_data = {
+            "System Composition": {
+                "Solvent": self.solvent,
+                "Anion": self.anion,
+                "Cation": self.CATION,
+                "Li Count": self.li_count,
+                "Salt:Solvent Ratio": f"1:{int(1/self.salt_to_solvent_ratio)}",
+            },
+            "Simulation Parameters": {
+                "Temperature": f"{self.temperature} K",
+                "Components": str(self.components),
+            },
+        }
+
+        # Add calculated properties
+        if results:
+            props_data = {}
+            if "density" in results and results["density"]:
+                props_data["Density (g/mL)"] = f"{results['density'].get('density', 0):.6f}"
+            if "conductivity" in results:
+                props_data["Conductivity (mS/cm)"] = f"{results['conductivity']:.6f}"
+            if "viscosity" in results:
+                props_data["Viscosity (cP)"] = f"{results['viscosity']:.6f}"
+            if "dielectric" in results and results["dielectric"]:
+                props_data["Dielectric Constant"] = f"{results['dielectric'].get('dielectric', 0):.6f}"
+
+            if props_data:
+                summary_data["Calculated Properties"] = props_data
+
+        self.logger.log_summary(summary_data)
 
     @classmethod
     def from_simple_config(
