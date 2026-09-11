@@ -18,9 +18,11 @@ calc = PropertiesCalculator(
     anion="PF6",
     li_count=34,
     salt_to_solvent_ratio_str="1:10",
-    base_dir="./test_LiPF6_EC",
+    base_dir="./test_LiPF6_ECDMC",
 )
 
 # Calculate conductivity, viscosity, dielectric (skip density)
-results = calc.calculate(properties=["conductivity", "viscosity", "dielectric"])
+results = results = calc.calculate(properties=["density"])
+
+#results = calc.calculate(properties=["conductivity", "viscosity", "dielectric"])
 print(json.dumps(results, indent=2))

@@ -79,7 +79,10 @@ def search_mixture(mol_ratio, min_atoms, components):
     # preserving `mol_ratio`.
     num_atoms = np.array([len(component.atoms) for component in components.values()])
     uni_mol_ratio = mol_ratio / np.min(mol_ratio)
-    min_count = int(np.ceil(min_atoms / sum(uni_mol_ratio * num_atoms)))
+    # Small tolerance: when `min_atoms` is the exact atom count of the requested
+    # composition, the quotient is an integer up to floating-point error, and a
+    # stray +1e-15 would otherwise bump ceil() to the next multiple.
+    min_count = int(np.ceil(min_atoms / sum(uni_mol_ratio * num_atoms) - 1e-9))
     mix = np.round(uni_mol_ratio * min_count).astype(int)
     total_atoms = int(round(sum(mix * num_atoms)))
     return total_atoms, mix
@@ -311,7 +314,7 @@ class DensityProtocol(Protocol):
             system=input_system,
             positions=input_positions,
             temperature=self.config['temperature'],
-            npt_steps=1500000,
+            npt_steps=100000,
             work_dir=self.output_dir,
         )
         logger.info('Finished running density protocol')
@@ -322,7 +325,8 @@ class DensityProtocol(Protocol):
 
         dd = []
         for _ in range(10):
-            dd.append(np.mean(np.random.choice(density[2000:3000], 100)))
+            # average over the last third of the run (rows 2000:3000 for the original 1.5M-step run)
+            dd.append(np.mean(np.random.choice(density[2 * len(density) // 3:], 100)))
         density, density_std = np.mean(dd), np.std(dd)
         result = {
             "density": density,

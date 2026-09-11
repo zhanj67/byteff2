@@ -18,7 +18,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Union
 
 from rdkit import Chem
 
@@ -119,9 +119,11 @@ class PropertiesCalculator:
     Unified interface for calculating molecular dynamics properties.
 
     Simplified input format:
-    - solvent_name: Name of solvent (e.g., "DMC", "EC")
-    - anion_name: Name of anion (e.g., "PF6", "TFSI")
-    - ion_count: Number of ion pairs (default: auto-calculated from natoms)
+    - solvent: one solvent name ("EC"), several names (["EC", "DMC"]) with an
+      optional solvent_ratio ("3:7"), or a dict {"EC": 3, "DMC": 7}
+    - anion: Name of anion (e.g., "PF6", "TFSI")
+    - li_count: Number of Li ions; salt_to_solvent_ratio sets the total number
+      of solvent molecules, which solvent_ratio then splits between solvents
 
     Default settings:
     - natoms: 5000
@@ -190,11 +192,12 @@ class PropertiesCalculator:
 
     def __init__(
         self,
-        solvent: str,
+        solvent: Union[str, Sequence[str], Dict[str, float]],
         anion: str,
         li_count: int = 34,
         salt_to_solvent_ratio: Optional[float] = None,
         salt_to_solvent_ratio_str: Optional[str] = None,
+        solvent_ratio: Optional[Union[str, Sequence[float]]] = None,
         temperature: float = 298.0,
         base_dir: str = "./md_simulations",
         verbose: bool = True,
@@ -204,23 +207,30 @@ class PropertiesCalculator:
 
         Parameters
         ----------
-        solvent : str
-            Name of solvent (e.g., "DMC", "EC")
+        solvent : str, list of str, or dict
+            One solvent name ("EC"), several names (["EC", "DMC"]), or a dict
+            mapping names to their molar proportions ({"EC": 3, "DMC": 7}).
         anion : str
             Name of anion (e.g., "PF6", "TFSI")
         li_count : int
             Number of Li ions (default: 34)
         salt_to_solvent_ratio : float, optional
-            Ratio of salt pairs to solvent molecules (e.g., 1/10 or 0.1).
-            If provided, solvent count = li_count * ratio (rounded down).
+            Ratio of salt pairs to *total* solvent molecules (e.g., 1/10 or 0.1).
+            If provided, total solvent count = li_count / ratio (rounded down).
         salt_to_solvent_ratio_str : str, optional
             Alternative format: "1:10" means 1 salt pair : 10 solvent molecules.
+        solvent_ratio : str or list of float, optional
+            Molar proportions between the solvents, in the order given by
+            `solvent`: "3:7" or [3, 7]. Defaults to equal parts. Ignored when
+            `solvent` is a dict (the dict values are the proportions).
         temperature : float
             Temperature in Kelvin (default: 298.0)
         base_dir : str
             Base directory for all simulations (default: "./md_simulations")
         """
-        self.solvent = solvent
+        self.solvents, self.solvent_ratio = self._parse_solvents(solvent, solvent_ratio)
+        # Human-readable label, e.g. "EC" or "EC/DMC"
+        self.solvent = "/".join(self.solvents)
         self.anion = anion
         self.li_count = li_count
         self.temperature = temperature
@@ -234,7 +244,10 @@ class PropertiesCalculator:
 
         # Log initialization
         self.logger.log_section("PropertiesCalculator Initialization", progress=0)
-        self.logger.log_step(f"Solvent: {solvent}, Anion: {anion}, Li count: {li_count}")
+        solvent_desc = self.solvent
+        if len(self.solvents) > 1:
+            solvent_desc += " (" + ":".join(f"{r:g}" for r in self.solvent_ratio) + ")"
+        self.logger.log_step(f"Solvent: {solvent_desc}, Anion: {anion}, Li count: {li_count}")
 
         # Validate and get SMILES
         self.solvent_smiles = self._get_solvent_smiles()
@@ -254,14 +267,49 @@ class PropertiesCalculator:
 
         self.results = {}
 
-    def _get_solvent_smiles(self) -> str:
-        """Get SMILES for solvent."""
-        if self.solvent not in self.SOLVENT_DATABASE:
+    @staticmethod
+    def _parse_solvents(
+        solvent: Union[str, Sequence[str], Dict[str, float]],
+        solvent_ratio: Optional[Union[str, Sequence[float]]],
+    ) -> tuple[List[str], List[float]]:
+        """Normalise the solvent spec into (names, molar proportions)."""
+        if isinstance(solvent, dict):
+            names = list(solvent.keys())
+            ratio = [float(v) for v in solvent.values()]
+        else:
+            if isinstance(solvent, str):
+                names = [s.strip() for s in solvent.split(",")]
+            else:
+                names = [str(s).strip() for s in solvent]
+            if solvent_ratio is None:
+                ratio = [1.0] * len(names)
+            elif isinstance(solvent_ratio, str):
+                try:
+                    ratio = [float(x) for x in solvent_ratio.split(":")]
+                except ValueError:
+                    raise ValueError(f"Invalid solvent_ratio format: {solvent_ratio!r} (expected e.g. '3:7')")
+            else:
+                ratio = [float(x) for x in solvent_ratio]
+
+        if not names or any(not n for n in names):
+            raise ValueError(f"Empty solvent name in {solvent!r}")
+        if len(set(names)) != len(names):
+            raise ValueError(f"Duplicate solvent names in {names}")
+        if len(ratio) != len(names):
+            raise ValueError(f"solvent_ratio has {len(ratio)} entries but {len(names)} solvents were given: {names}")
+        if any(r <= 0 for r in ratio):
+            raise ValueError(f"solvent_ratio entries must be positive, got {ratio}")
+        return names, ratio
+
+    def _get_solvent_smiles(self) -> Dict[str, str]:
+        """Get SMILES for every solvent, keyed by name."""
+        unknown = [s for s in self.solvents if s not in self.SOLVENT_DATABASE]
+        if unknown:
             raise ValueError(
-                f"Unknown solvent: {self.solvent}. "
+                f"Unknown solvent(s): {unknown}. "
                 f"Known solvents: {list(self.SOLVENT_DATABASE.keys())}"
             )
-        return self.SOLVENT_DATABASE[self.solvent]
+        return {s: self.SOLVENT_DATABASE[s] for s in self.solvents}
 
     def _get_anion_smiles(self) -> str:
         """Get SMILES for anion."""
@@ -289,28 +337,43 @@ class PropertiesCalculator:
         # Default: 1:10 (1 salt pair : 10 solvent molecules)
         return 1.0 / 10.0
 
-    def _build_components(self) -> Dict[str, int]:
-        """Build components dictionary from salt:solvent ratio."""
-        # Calculate solvent count from ratio
-        # salt_to_solvent_ratio = salt_pairs / solvent_molecules
-        # solvent_count = li_count / ratio (rounded down)
-        solvent_count = int(self.li_count / self.salt_to_solvent_ratio)
+    @staticmethod
+    def _apportion(total: int, weights: Sequence[float]) -> List[int]:
+        """Split `total` into integers proportional to `weights` (largest remainder)."""
+        wsum = float(sum(weights))
+        exact = [total * w / wsum for w in weights]
+        counts = [int(x) for x in exact]
+        remainder = total - sum(counts)
+        for i in sorted(range(len(weights)), key=lambda i: exact[i] - counts[i], reverse=True)[:remainder]:
+            counts[i] += 1
+        return counts
 
-        components = {
-            self.solvent: solvent_count,
-            self.CATION: self.li_count,
-            self.anion: self.li_count,
-        }
-        logger.info(f"Components: {components} (ratio {self.salt_to_solvent_ratio:.4f})")
+    def _build_components(self) -> Dict[str, int]:
+        """Build components dictionary from salt:solvent ratio and solvent ratio."""
+        # salt_to_solvent_ratio = salt_pairs / total solvent molecules
+        # total solvent count = li_count / ratio (rounded down), then split
+        # between the solvents according to solvent_ratio.
+        total_solvent = int(self.li_count / self.salt_to_solvent_ratio)
+        solvent_counts = self._apportion(total_solvent, self.solvent_ratio)
+        if any(c < 1 for c in solvent_counts):
+            raise ValueError(
+                f"Solvent ratio {self.solvent_ratio} leaves a solvent with zero molecules "
+                f"out of {total_solvent} total; increase li_count or adjust the ratio"
+            )
+
+        components = dict(zip(self.solvents, solvent_counts))
+        components[self.CATION] = self.li_count
+        components[self.anion] = self.li_count
+        logger.info(f"Components: {components} (salt:solvent {self.salt_to_solvent_ratio:.4f}, "
+                    f"solvent ratio {':'.join(f'{r:g}' for r in self.solvent_ratio)})")
         return components
 
     def _build_smiles(self) -> Dict[str, str]:
         """Build SMILES dictionary."""
-        return {
-            self.solvent: self.solvent_smiles,
-            self.CATION: self.CATION_SMILES,
-            self.anion: self.anion_smiles,
-        }
+        smiles = dict(self.solvent_smiles)
+        smiles[self.CATION] = self.CATION_SMILES
+        smiles[self.anion] = self.anion_smiles
+        return smiles
 
     def _count_atoms(self) -> int:
         """Exact atom count of the requested composition, hydrogens included."""
@@ -529,6 +592,8 @@ class PropertiesCalculator:
         """Save results summary to JSON."""
         summary = {
             "solvent": self.solvent,
+            "solvents": self.solvents,
+            "solvent_ratio": self.solvent_ratio,
             "anion": self.anion,
             "cation": self.CATION,
             "li_count": self.li_count,
@@ -547,6 +612,7 @@ class PropertiesCalculator:
         summary_data = {
             "System Composition": {
                 "Solvent": self.solvent,
+                "Solvent Ratio": ":".join(f"{r:g}" for r in self.solvent_ratio),
                 "Anion": self.anion,
                 "Cation": self.CATION,
                 "Li Count": self.li_count,
@@ -578,11 +644,12 @@ class PropertiesCalculator:
     @classmethod
     def from_simple_config(
         cls,
-        solvent: str,
+        solvent: Union[str, Sequence[str], Dict[str, float]],
         anion: str,
         li_count: int = 34,
         salt_to_solvent_ratio: Optional[float] = None,
         salt_to_solvent_ratio_str: Optional[str] = None,
+        solvent_ratio: Optional[Union[str, Sequence[float]]] = None,
         **kwargs
     ) -> "PropertiesCalculator":
         """
@@ -590,16 +657,18 @@ class PropertiesCalculator:
 
         Parameters
         ----------
-        solvent : str
-            Solvent name
+        solvent : str, list of str, or dict
+            Solvent name(s); a dict maps names to molar proportions
         anion : str
             Anion name
         li_count : int
             Number of Li ions (default: 34)
         salt_to_solvent_ratio : float, optional
-            Ratio of salt pairs to solvent molecules
+            Ratio of salt pairs to total solvent molecules
         salt_to_solvent_ratio_str : str, optional
             Ratio in "1:10" format
+        solvent_ratio : str or list of float, optional
+            Molar proportions between solvents, e.g. "3:7"
         **kwargs : dict
             Additional parameters (temperature, base_dir)
         """
@@ -609,6 +678,7 @@ class PropertiesCalculator:
             li_count=li_count,
             salt_to_solvent_ratio=salt_to_solvent_ratio,
             salt_to_solvent_ratio_str=salt_to_solvent_ratio_str,
+            solvent_ratio=solvent_ratio,
             **kwargs
         )
 
@@ -628,6 +698,10 @@ Examples:
   python -m byteff2.toolkit.properties_calculator \\
       --solvent EC --anion TFSI --li-count 50 --ratio 1:8
 
+  # Mixed solvent: 1:10 LiPF6 in EC:DMC = 3:7 (34 Li, 102 EC, 238 DMC)
+  python -m byteff2.toolkit.properties_calculator \\
+      --solvent EC,DMC --solvent-ratio 3:7 --anion PF6 --ratio 1:10
+
   # Only density
   python -m byteff2.toolkit.properties_calculator \\
       --solvent DMC --anion PF6 --ratio 1:10 \\
@@ -639,7 +713,13 @@ Examples:
         "--solvent",
         type=str,
         required=True,
-        help="Solvent name (e.g., DMC, EC, H2O)",
+        help="Solvent name, or comma-separated names for a mixture (e.g., EC or EC,DMC)",
+    )
+    parser.add_argument(
+        "--solvent-ratio",
+        type=str,
+        default=None,
+        help="Molar proportions between solvents, e.g. 3:7 (default: equal parts)",
     )
     parser.add_argument(
         "--anion",
@@ -693,6 +773,7 @@ Examples:
             anion=args.anion,
             li_count=args.li_count,
             salt_to_solvent_ratio_str=args.ratio,
+            solvent_ratio=args.solvent_ratio,
             temperature=args.temperature,
             base_dir=args.work_dir,
         )
@@ -707,7 +788,9 @@ Examples:
         print("\n" + "="*60)
         print("CALCULATION SUMMARY")
         print("="*60)
-        print(f"Solvent:  {args.solvent}")
+        print(f"Solvent:  {calculator.solvent}")
+        if len(calculator.solvents) > 1:
+            print(f"Solvent ratio: {':'.join(f'{r:g}' for r in calculator.solvent_ratio)}")
         print(f"Anion:    {args.anion}")
         print(f"Cation:   LI (fixed)")
         print(f"Li count: {calculator.li_count}")
