@@ -64,6 +64,12 @@ def predict_density(component: dict):
     for c in solvent:
         density += c.density * c.molar_num
         total_molar_ratio += c.molar_num
+    if not total_molar_ratio:
+        # Solvent-free system (e.g. a pure ionic liquid): there is no solvent
+        # density to anchor the estimate on, so start from a deliberately low
+        # guess. This only sets the initial packing box -- build_system grows it
+        # until every molecule is inserted, and the NPT run sets the real density.
+        return 1.0
     sol_density = density / total_molar_ratio
     sol_ratio = sol_density
     # Add cation and anion
@@ -314,7 +320,7 @@ class DensityProtocol(Protocol):
             system=input_system,
             positions=input_positions,
             temperature=self.config['temperature'],
-            npt_steps=100000,
+            npt_steps=10000,  # LOCAL TEST VALUE -- production is 100000; do not commit
             work_dir=self.output_dir,
         )
         logger.info('Finished running density protocol')
@@ -347,9 +353,12 @@ class TransportProtocol(Protocol):
 
     def run_protocol(self):
         logger.info('running transport protocol')
-        npt_steps = 4000000
-        nvt_steps = 10000000
-        nonequ_steps = 1000000
+        # LOCAL TEST VALUES -- production is 4000000 / 10000000 / 1000000; do not commit
+        # nonequ_steps cannot go below 500000: viscosity.py:143 asserts >=10000 rows
+        # and ViscosityReporter writes one row per 50 steps.
+        npt_steps = 10000
+        nvt_steps = 50000
+        nonequ_steps = 500000
         nonbonded_params = self.generate_ff_params(self.config['smiles'])
         self.components = self.build_system(
             self.config['natoms'],
@@ -544,10 +553,11 @@ class DielectricProtocol(Protocol):
 
     def run_protocol(self):
         logger.info('running dielectric protocol')
-        # steps configurable via JSON; defaults provide adequate sampling
-        npt_steps = int(self.config.get('npt_steps', 2000000))
-        nvt_steps = int(self.config.get('nvt_steps', 6000000))
-        dipole_interval = int(self.config.get('dipole_interval', 500))
+        # steps configurable via JSON
+        # LOCAL TEST DEFAULTS -- production is 2000000 / 6000000 / 500; do not commit
+        npt_steps = int(self.config.get('npt_steps', 10000))
+        nvt_steps = int(self.config.get('nvt_steps', 50000))
+        dipole_interval = int(self.config.get('dipole_interval', 100))
         nonbonded_params = self.generate_ff_params(self.config['smiles'])
         self.components = self.build_system(
             self.config['natoms'],
