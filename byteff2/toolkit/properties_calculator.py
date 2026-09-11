@@ -28,9 +28,37 @@ from byteff2.toolkit.protocol import (
     TransportProtocol,
     CompressibilityProtocol,
 )
+from byteff2.utils.mol_inventory import all_name_mapped_smiles
 from bytemol.utils import setup_default_logging
 
 logger = setup_default_logging()
+
+
+def _load_inventory_databases() -> tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
+    """Split the ByteFF2 molecule inventory into cations, anions and solvents.
+
+    Species are bucketed by net formal charge, and the inventory's atom-mapped
+    SMILES are reduced to plain canonical SMILES (the form the protocols and the
+    example configs consume). Deriving the tables here rather than duplicating
+    them keeps byteff2.utils.mol_inventory the single source of truth.
+    """
+    cations: Dict[str, str] = {}
+    anions: Dict[str, str] = {}
+    solvents: Dict[str, str] = {}
+    for name, mapped_smiles in all_name_mapped_smiles.items():
+        mol = Chem.MolFromSmiles(mapped_smiles)
+        if mol is None:
+            raise ValueError(f"mol_inventory entry {name!r} is not valid SMILES: {mapped_smiles!r}")
+        charge = sum(atom.GetFormalCharge() for atom in mol.GetAtoms())
+        for atom in mol.GetAtoms():
+            atom.SetAtomMapNum(0)
+        plain_smiles = Chem.MolToSmiles(Chem.RemoveHs(mol))
+        bucket = cations if charge > 0 else anions if charge < 0 else solvents
+        bucket[name] = plain_smiles
+    return cations, anions, solvents
+
+
+_CATION_DATABASE, _ANION_DATABASE, _SOLVENT_DATABASE = _load_inventory_databases()
 
 
 class PropertiesLogger:
@@ -141,54 +169,12 @@ class PropertiesCalculator:
 
     # Fixed cation (always lithium)
     CATION = "LI"
-    CATION_SMILES = "[Li+]"
+    CATION_SMILES = _CATION_DATABASE["LI"]
 
-    # Anion SMILES database
-    ANION_DATABASE = {
-        "PF6": "F[P-](F)(F)(F)(F)F",
-        "BF4": "F[B-](F)(F)F",
-        "ClO4": "[O-][Cl](=O)(=O)=O",
-        "TFSI": "[N-](S(=O)(=O)C(F)(F)F)S(=O)(=O)C(F)(F)F",
-        "OTf": "[O-]S(=O)(=O)C(F)(F)F",
-        "FSI": "FS(=O)(=O)[N-]S(=O)(=O)F",
-    }
-
-    # Solvent SMILES. Entries below are transcribed from Supplementary Table 1
-    # ("Molecule Abbreviations") of the ByteFF2 paper SI, which is the naming
-    # authority for this force field's training set.
-    SOLVENT_DATABASE = {
-        # carbonates
-        "EC": "C1COC(=O)O1",                    # ethylene carbonate
-        "DMC": "COC(=O)OC",                     # dimethyl carbonate
-        "EMC": "CCOC(=O)OC",                    # ethyl methyl carbonate
-        "PC": "CC1COC(=O)O1",                   # propylene carbonate
-        "FEC": "C1C(OC(=O)O1)F",                # fluoroethylene carbonate
-        "DFEC": "O1[C@H](F)[C@@H](F)OC1=O",     # difluoroethylene carbonate
-        "TFPC": "C1C(OC(=O)O1)C(F)(F)F",        # 4-(trifluoromethyl)-1,3-dioxolan-2-one
-        "FEMC": "COC(=O)OCC(F)(F)F",            # methyl 2,2,2-trifluoroethyl carbonate
-        # esters / lactones
-        "MA": "CC(=O)OC",                       # methyl acetate
-        "EA": "CCOC(=O)C",                      # ethyl acetate
-        "GBL": "C1CC(=O)OC1",                   # gamma-butyrolactone
-        "HAC": "CC(=O)O",                       # acetic acid
-        # ethers
-        "TGDME": "COCCOCCOCCOC",                # triethylene glycol dimethyl ether
-        "EMP": "COCCCOCC",                      # 1-methoxy-3-ethoxypropane
-        "F3EMP": "COCCCOCC(F)(F)F",             # 1-methoxy-3-(2,2,2-trifluoroethoxy)propane
-        # phosphate
-        "TFP": "O=P(OCC(F)(F)F)(OCC(F)(F)F)OCC(F)(F)F",  # tris(2,2,2-trifluoroethyl) phosphate
-        # others
-        "AN": "CC#N",                           # acetonitrile
-        "ACE": "CC(C)=O",                       # acetone
-        "NOM": "C[N+](=O)[O-]",                 # nitromethane
-        "BZ": "c1ccccc1",                       # benzene
-        "Ani": "Nc1ccccc1",                     # aniline
-        "EtCl": "CCCl",                         # ethyl chloride
-        "EtSH": "CCS",                          # ethanethiol
-        # not in the SI table, but standard and widely used
-        "DEC": "CCOC(=O)OCC",                   # diethyl carbonate
-        "H2O": "O",                             # water
-    }
+    # Both tables are derived from byteff2.utils.mol_inventory, so they list
+    # exactly the species this force field was parameterised for.
+    ANION_DATABASE = _ANION_DATABASE
+    SOLVENT_DATABASE = _SOLVENT_DATABASE
 
     def __init__(
         self,
@@ -201,6 +187,7 @@ class PropertiesCalculator:
         temperature: float = 298.0,
         base_dir: str = "./md_simulations",
         verbose: bool = True,
+        custom_smiles: Optional[Dict[str, str]] = None,
     ):
         """
         Initialize the properties calculator with simplified input.
@@ -227,7 +214,16 @@ class PropertiesCalculator:
             Temperature in Kelvin (default: 298.0)
         base_dir : str
             Base directory for all simulations (default: "./md_simulations")
+        custom_smiles : dict, optional
+            Extra {name: SMILES} entries for species absent from
+            SOLVENT_DATABASE / ANION_DATABASE, e.g. {"MYSOL": "CCOCC"}. Those
+            names then work anywhere a solvent or anion name is accepted. Names
+            already in the inventory are rejected rather than overridden.
+            ByteFF2 predicts parameters from the molecular graph, so custom
+            species do run -- but they sit outside the training inventory, so
+            their parameters are extrapolated and unvalidated.
         """
+        self.custom_smiles = self._parse_custom_smiles(custom_smiles)
         self.solvents, self.solvent_ratio = self._parse_solvents(solvent, solvent_ratio)
         # Human-readable label, e.g. "EC" or "EC/DMC"
         self.solvent = "/".join(self.solvents)
@@ -267,6 +263,45 @@ class PropertiesCalculator:
 
         self.results = {}
 
+    @classmethod
+    def _parse_custom_smiles(cls, custom_smiles: Optional[Dict[str, str]]) -> Dict[str, str]:
+        """Validate user-supplied {name: SMILES} and canonicalise the SMILES."""
+        if not custom_smiles:
+            return {}
+
+        known = set(cls.SOLVENT_DATABASE) | set(cls.ANION_DATABASE) | {cls.CATION}
+        parsed = {}
+        for name, smi in custom_smiles.items():
+            name = str(name).strip()
+            if not name:
+                raise ValueError(f"Empty name in custom_smiles: {custom_smiles!r}")
+            if name in known:
+                raise ValueError(
+                    f"custom_smiles name {name!r} already exists in the ByteFF2 inventory "
+                    f"(SMILES {cls.SOLVENT_DATABASE.get(name) or cls.ANION_DATABASE.get(name)!r}). "
+                    f"Pick a different name rather than overriding a parameterised species."
+                )
+            mol = Chem.MolFromSmiles(smi)
+            if mol is None:
+                raise ValueError(f"custom_smiles[{name!r}] is not valid SMILES: {smi!r}")
+            parsed[name] = Chem.MolToSmiles(mol)
+            logger.warning(
+                f"{name} is outside the ByteFF2 training inventory; its force field "
+                f"parameters will be extrapolated and are unvalidated."
+            )
+        return parsed
+
+    def _lookup_smiles(self, name: str, database: Dict[str, str], kind: str) -> str:
+        """Resolve a species name against the inventory, then custom_smiles."""
+        if name in database:
+            return database[name]
+        if name in self.custom_smiles:
+            return self.custom_smiles[name]
+        raise ValueError(
+            f"Unknown {kind}: {name!r}. Known {kind}s: {sorted(database)}. "
+            f"Pass custom_smiles={{{name!r}: '<SMILES>'}} to define it directly."
+        )
+
     @staticmethod
     def _parse_solvents(
         solvent: Union[str, Sequence[str], Dict[str, float]],
@@ -303,22 +338,11 @@ class PropertiesCalculator:
 
     def _get_solvent_smiles(self) -> Dict[str, str]:
         """Get SMILES for every solvent, keyed by name."""
-        unknown = [s for s in self.solvents if s not in self.SOLVENT_DATABASE]
-        if unknown:
-            raise ValueError(
-                f"Unknown solvent(s): {unknown}. "
-                f"Known solvents: {list(self.SOLVENT_DATABASE.keys())}"
-            )
-        return {s: self.SOLVENT_DATABASE[s] for s in self.solvents}
+        return {s: self._lookup_smiles(s, self.SOLVENT_DATABASE, "solvent") for s in self.solvents}
 
     def _get_anion_smiles(self) -> str:
         """Get SMILES for anion."""
-        if self.anion not in self.ANION_DATABASE:
-            raise ValueError(
-                f"Unknown anion: {self.anion}. "
-                f"Known anions: {list(self.ANION_DATABASE.keys())}"
-            )
-        return self.ANION_DATABASE[self.anion]
+        return self._lookup_smiles(self.anion, self.ANION_DATABASE, "anion")
 
     def _parse_ratio(self, ratio_float: Optional[float], ratio_str: Optional[str]) -> float:
         """Parse salt:solvent ratio from float or string format."""
@@ -476,11 +500,6 @@ class PropertiesCalculator:
         config_file = str(self.base_dir / "dielectric_config.json")
         self._save_config(config, config_file)
 
-        # Add dielectric-specific parameters
-        config["npt_steps"] = 2000000
-        config["nvt_steps"] = 6000000
-        config["dipole_interval"] = 500
-
         logger.info("Calculating dielectric constant...")
         result = self._run_protocol(DielectricProtocol, config)
         self.results["dielectric"] = result
@@ -600,6 +619,7 @@ class PropertiesCalculator:
             "salt_to_solvent_ratio": self.salt_to_solvent_ratio,
             "components": self.components,
             "temperature": self.temperature,
+            "custom_smiles": self.custom_smiles,
             "results": results,
         }
         summary_file = self.base_dir / "summary.json"
@@ -670,7 +690,7 @@ class PropertiesCalculator:
         solvent_ratio : str or list of float, optional
             Molar proportions between solvents, e.g. "3:7"
         **kwargs : dict
-            Additional parameters (temperature, base_dir)
+            Additional parameters (temperature, base_dir, custom_smiles)
         """
         return cls(
             solvent=solvent,
@@ -763,8 +783,24 @@ Examples:
         default="properties_calculator.log",
         help="Log file (default: properties_calculator.log)",
     )
+    parser.add_argument(
+        "--custom-smiles",
+        type=str,
+        action="append",
+        default=None,
+        metavar="NAME=SMILES",
+        help="Define a species not in the ByteFF2 inventory, e.g. MYSOL=CCOCC. "
+             "Repeat the flag for several species.",
+    )
 
     args = parser.parse_args()
+
+    custom_smiles = {}
+    for entry in args.custom_smiles or []:
+        name, sep, smi = entry.partition("=")
+        if not sep or not name.strip() or not smi.strip():
+            parser.error(f"--custom-smiles expects NAME=SMILES, got {entry!r}")
+        custom_smiles[name.strip()] = smi.strip()
 
     try:
         # Create calculator
@@ -776,6 +812,7 @@ Examples:
             solvent_ratio=args.solvent_ratio,
             temperature=args.temperature,
             base_dir=args.work_dir,
+            custom_smiles=custom_smiles,
         )
 
         # Parse properties to calculate
