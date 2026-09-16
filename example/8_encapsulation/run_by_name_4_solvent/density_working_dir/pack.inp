@@ -1,0 +1,34 @@
+tolerance 2.0
+filetype xyz
+output solvent_salt.xyz
+seed -1
+
+structure EC.xyz
+  number 85
+  inside box 1.000 1.000 1.000 39.700 39.700 39.700
+end structure
+
+structure DMC.xyz
+  number 85
+  inside box 1.000 1.000 1.000 39.700 39.700 39.700
+end structure
+
+structure EMC.xyz
+  number 85
+  inside box 1.000 1.000 1.000 39.700 39.700 39.700
+end structure
+
+structure FEC.xyz
+  number 85
+  inside box 1.000 1.000 1.000 39.700 39.700 39.700
+end structure
+
+structure PF6.xyz
+  number 34
+  inside box 1.000 1.000 1.000 39.700 39.700 39.700
+end structure
+
+structure LI.xyz
+  number 34
+  inside box 1.000 1.000 1.000 39.700 39.700 39.700
+end structure
