@@ -1,0 +1,62 @@
+{
+  "solvent": "EC/DMC/EMC/FEC",
+  "solvents": [
+    "EC",
+    "DMC",
+    "EMC",
+    "FEC"
+  ],
+  "solvent_ratio": [
+    2.5,
+    2.5,
+    2.5,
+    2.5
+  ],
+  "anion": "PF6",
+  "cation": "LI",
+  "li_count": 34,
+  "salt_to_solvent_ratio": 0.1,
+  "components": {
+    "EC": 85,
+    "DMC": 85,
+    "EMC": 85,
+    "FEC": 85,
+    "LI": 34,
+    "PF6": 34
+  },
+  "temperature": 298.0,
+  "custom_smiles": {},
+  "results": {
+    "density": {
+      "density": 1.3294607072651476,
+      "density_std": 0.0007238618154709273
+    },
+    "transport": {
+      "cubic_box_length_unit": "angstrom",
+      "cubic_box_length": 36.28385990967345,
+      "conductivity_unit": "mS/cm",
+      "conductivity_onsager": 8.115941696101599,
+      "conductivity_NE": 12.83271320389874,
+      "diffusivity_unit": "10^-10 m^2/s",
+      "Dself_inf": [
+        2.778629822391119,
+        2.5300144818109818,
+        2.1382844462160753,
+        2.72282912340757,
+        2.104460875179968,
+        1.412082621512496
+      ],
+      "viscosity": 4.917391107003325,
+      "components": [
+        "EC",
+        "DMC",
+        "EMC",
+        "FEC",
+        "PF6",
+        "LI"
+      ]
+    },
+    "conductivity": 8.115941696101599,
+    "viscosity": 4.917391107003325
+  }
+}
