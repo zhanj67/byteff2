@@ -43,14 +43,6 @@ import sys
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 
-# LD_LIBRARY_PATH is consumed by the dynamic loader at process start, so setting
-# it from inside Python is too late -- re-exec once so the check below is a real
-# test of the library being findable, not of this script's own environment.
-_OPENMM_LIB = os.path.join(os.environ.get('OPENMM_DIR', '/usr/local/openmm'), 'lib')
-if os.path.isdir(_OPENMM_LIB) and _OPENMM_LIB not in os.environ.get('LD_LIBRARY_PATH', '').split(':'):
-    os.environ['LD_LIBRARY_PATH'] = _OPENMM_LIB + ':' + os.environ.get('LD_LIBRARY_PATH', '')
-    os.execv(sys.executable, [sys.executable] + sys.argv)
-
 sys.path.insert(0, REPO)
 
 # pylint: disable=wrong-import-position
