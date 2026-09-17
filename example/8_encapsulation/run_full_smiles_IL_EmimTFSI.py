@@ -19,7 +19,7 @@ Calculator : IonicLiquidPropertiesCalculator (default choice for system with no 
 Inputs  : cation=["EMIM"], 
           anion=["TFSI"],  
           ion_pairs=34, smiles={name: SMILES for every ion}  (all by SMILES)
-Output  : ./run_full_smiles_EmimTFSI_IL/  (results.json + per-property subdirectories)
+Output  : ./run_full_smiles_IL_EmimTFSI/  (results.json + per-property subdirectories)
 Properties calculated:
     density, conductivity, viscosity
 """
