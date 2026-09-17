@@ -2,7 +2,7 @@
 
 Each `run_*.py` builds a liquid electrolyte with `PropertiesCalculator` (or an ionic liquid with `IonicLiquidPropertiesCalculator`) and calculates its properties (density, dielectric, viscosity, conductivity). Run one with `python run_xxx.py`; results land in the script's `BASE_DIR`.
 
-Species are given either **by name**, if they are documented in `byteff2/toolkit/properties_calculator.py`, or **by SMILES** via `custom_smiles` if they are not.
+Species are given either **by name**, if they are documented in `byteff2/utils/mol_inventory.py`, or **by SMILES** via `custom_smiles` if they are not.
 
 | Script | System | Input style |
 |---|---|---|

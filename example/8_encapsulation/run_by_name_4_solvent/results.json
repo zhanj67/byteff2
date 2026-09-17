@@ -1,0 +1,12 @@
+{
+  "density": 1.3294607072651476,
+  "dielectric": null,
+  "viscosity": 4.917391107003325,
+  "conductivity": 8.115941696101599,
+  "units": {
+    "density": "g/mL",
+    "dielectric": "dimensionless",
+    "viscosity": "cP",
+    "conductivity": "mS/cm"
+  }
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""Anion by SMILES, solvent by name: 1:10 LiFTA in EC:DMC = 3:7.
+"""Run all by SMILES
 
-FTA anion is not in the ByteFF2 inventory, so it is declared through custom_smiles.
+FTA ( asymetric version of FSA or TFSA anion) is not in the ByteFF2 inventory, so it is declared through custom_smiles.
 custom_smiles covers solvents and anions alike; here both styles are mixed in
 one system.
 """
@@ -14,11 +14,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from byteff2.toolkit.common import PROPERTIES, save
 from byteff2.toolkit.properties_calculator import PropertiesCalculator
 
-BASE_DIR = "./run_by_anion_smiles"
+BASE_DIR = "./run_anion_as_smiles_in_ECDMCEMC"
 
 calc = PropertiesCalculator(
-    solvent=["EC", "DMC"],
-    solvent_ratio="3:7",
+    solvent=["EC", "DMC", "EMC"],
+    solvent_ratio="4:3:3",
     anion="FTA",
     li_count=34,
     salt_to_solvent_ratio_str="1:10",
@@ -27,4 +27,4 @@ calc = PropertiesCalculator(
 )
 
 if __name__ == "__main__":
-    save(calc.calculate(properties=PROPERTIES), BASE_DIR)
+    save(calc.calculate(properties=["density", "viscosity", "conductivity"]), BASE_DIR)

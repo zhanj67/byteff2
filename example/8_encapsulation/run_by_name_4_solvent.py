@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 """Run by inventory names: 1:10 LiPF6 in EC:DMC = 3:7. 
 PF6, EC, DMC are in the ByteFF2 inventory, therefore can use their name directly, no need to manually input SMILES
-"""
 
+Interface
+---------
+Inputs  : solvent=["EC", "DMC"], solvent_ratio="3:7", anion="PF6",
+          li_count=34, salt_to_solvent_ratio_str="1:10"  (all by name)
+Output  : ./run_by_name/  (results.json + per-property subdirectories)
+Properties calculated (PROPERTIES):
+    density, dielectric, viscosity, conductivity
+"""
 import sys
 from pathlib import Path
 
@@ -11,11 +18,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from byteff2.toolkit.common import PROPERTIES, save
 from byteff2.toolkit.properties_calculator import PropertiesCalculator
 
-BASE_DIR = "./run_by_name"
+BASE_DIR = "./run_by_name_4_solvent"
 
 calc = PropertiesCalculator(
-    solvent=["EC", "DMC"],
-    solvent_ratio="3:7",
+    solvent=["EC", "DMC", "EMC", "FEC"],
+    solvent_ratio="2.5:2.5:2.5:2.5",
     anion="PF6",
     li_count=34,
     salt_to_solvent_ratio_str="1:10",
@@ -23,4 +30,4 @@ calc = PropertiesCalculator(
 )
 
 if __name__ == "__main__":
-    save(calc.calculate(properties=PROPERTIES), BASE_DIR)
+    save(calc.calculate(properties=["density", "viscosity", "conductivity"]), BASE_DIR)

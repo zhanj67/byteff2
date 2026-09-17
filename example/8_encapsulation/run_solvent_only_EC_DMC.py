@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 
-Pure-solvent (zero-salt) control for run_full_smiles.py's LiTFA/EC/DMC run.
+Pure-solvent (zero-salt) run
 
 """
 import sys
@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from byteff2.toolkit.common import save
 from byteff2.toolkit.properties_calculator import PropertiesCalculator
 
-BASE_DIR = "./run_solvent_only_EC_DMC"  # new dir name -- avoids the crashed draft's leftover state in ./run_EC_DMC
+BASE_DIR = "./run_solvent_only_EC_DMC" 
 
 calc = PropertiesCalculator(
     solvent=["EC", "DMC"],
@@ -25,7 +25,5 @@ calc = PropertiesCalculator(
 
 if __name__ == "__main__":
     # Conductivity is skipped from the requested/reported properties (meaningless
-    # for a neutral system anyway). Note this doesn't skip any compute: "viscosity"
-    # alone still runs the same single TransportProtocol/NEMD job that would also
-    # produce conductivity_onsager -- it's just not requested/promoted here.
+    # for a neutral system anyway).
     save(calc.calculate(properties=["density", "viscosity", "dielectric"]), BASE_DIR)

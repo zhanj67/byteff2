@@ -1,0 +1,24 @@
+{
+  "protocol": "Transport",
+  "params_dir": "run_by_name_4_solvent/transport_params",
+  "output_dir": "run_by_name_4_solvent/transport_results",
+  "working_dir": "run_by_name_4_solvent/transport_working_dir",
+  "temperature": 298,
+  "natoms": 4267,
+  "components": {
+    "EC": 85,
+    "DMC": 85,
+    "EMC": 85,
+    "FEC": 85,
+    "LI": 34,
+    "PF6": 34
+  },
+  "smiles": {
+    "EC": "O=C1OCCO1",
+    "DMC": "COC(=O)OC",
+    "EMC": "CCOC(=O)OC",
+    "FEC": "O=C1OC[C@H](F)O1",
+    "LI": "[Li+]",
+    "PF6": "F[P-](F)(F)(F)(F)F"
+  }
+}
