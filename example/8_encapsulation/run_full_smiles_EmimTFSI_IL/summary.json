@@ -1,0 +1,51 @@
+{
+  "cation": "EMIM",
+  "cations": [
+    "EMIM"
+  ],
+  "cation_ratio": [
+    1.0
+  ],
+  "anion": "TFSI",
+  "anions": [
+    "TFSI"
+  ],
+  "anion_ratio": [
+    1.0
+  ],
+  "ion_pairs": 34,
+  "components": {
+    "EMIM": 34,
+    "TFSI": 34
+  },
+  "temperature": 298.0,
+  "smiles": {
+    "EMIM": "CCn1cc[n+](C)c1",
+    "TFSI": "O=S(=O)([N-]S(=O)(=O)C(F)(F)F)C(F)(F)F"
+  },
+  "results": {
+    "density": {
+      "density": 1.539673547554895,
+      "density_std": 0.0024973693235309014
+    },
+    "transport": {
+      "cubic_box_length_unit": "angstrom",
+      "cubic_box_length": 24.34427813395727,
+      "conductivity_unit": "mS/cm",
+      "conductivity_onsager": 2.877631482811031,
+      "conductivity_NE": 4.367641185015252,
+      "diffusivity_unit": "10^-10 m^2/s",
+      "Dself_inf": [
+        0.19228471941954445,
+        0.24408740113636665
+      ],
+      "viscosity": 34.648249329985546,
+      "components": [
+        "TFSI",
+        "EMIM"
+      ]
+    },
+    "conductivity": 2.877631482811031,
+    "viscosity": 34.648249329985546
+  }
+}
