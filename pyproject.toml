@@ -1,60 +1,97 @@
 [build-system]
-requires = ["setuptools>=64", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "byteff2"
 version = "0.1.0"
-description = "ByteFF2: machine-learned force field and MD property toolkit for liquid electrolytes"
+description = "ByteFF2: Molecular dynamics and force field toolkit"
+authors = [{name = "ByteFF2 Contributors"}]
 readme = "README.md"
-license = { file = "LICENSE" }
 requires-python = ">=3.11"
-
-# Runtime dependencies. Pinned versions mirror requirements.txt, which is kept
-# as the lock file for the `byt_min` conda environment.
-#
-# Not listed on purpose (must be installed outside pip):
-#   - openmm / openmm-velocityVerlet : custom build, see submodules/openmm and deploy/
-#   - packmol                        : system install, see README "Installing Packmol"
-#   - CUDA-enabled torch             : pick the wheel matching your driver; the
-#                                      `torch==2.6.0` pin below accepts CPU or CUDA builds
-dependencies = [
-    "numpy~=1.26.4",
-    "torch==2.6.0",
-    "torch-geometric==2.6.1",
-    "ase==3.24.0",
-    "rdkit==2024.9.6",
-    "tqdm~=4.67.1",
-    "MDAnalysis==2.9.0",
-    "pandas~=2.3.1",
-    "h5py~=3.14.0",
-    "PyYAML==6.0.2",
-    "GitPython~=3.1.45",
-    "Sella==2.3.5",
-    "scipy~=1.12",
-]
+license = {text = "MIT"}
 
 [project.optional-dependencies]
-dev = [
-    "pytest~=8.4.1",
-    "pytest-xdist~=3.5",
-    "isort~=6.0.1",
-    "pylint~=3.3.8",
-    "pre-commit",
-    "yapf",
-]
+packmol = ["packmol"]
 
-[project.scripts]
-byteff2-properties = "byteff2.toolkit.properties_calculator:main"
-byteff2-il-properties = "byteff2.toolkit.ionic_liquid_properties_calculator:main"
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohappyeyeballs = "2.7.1"
+aiohttp = "3.14.3"
+aiosignal = "1.4.0"
+ase = "3.24.0"
+attrs = "26.1.0"
+certifi = "2026.7.22"
+charset-normalizer = "3.5.1"
+cloudpickle = "3.1.2"
+contourpy = "1.3.3"
+cycler = "0.12.1"
+execnet = "2.1.2"
+filelock = "3.32.3"
+fonttools = "4.65.0"
+frozenlist = "1.8.0"
+fsspec = "2026.7.0"
+gitdb = "4.0.12"
+gitpython = "3.1.62"
+griddataformats = "1.2.0"
+h5py = "3.14.0"
+idna = "3.19"
+iniconfig = "2.3.0"
+jax = "0.7.1"
+jaxlib = "0.7.1"
+jinja2 = "3.1.6"
+joblib = "1.6.0"
+kiwisolver = "1.5.1"
+markupsafe = "3.0.3"
+matplotlib = "3.11.1"
+mda-xdrlib = "0.2.0"
+mdanalysis = "2.9.0"
+ml-dtypes = "0.5.4"
+mmtf-python = "1.1.3"
+mpmath = "1.3.0"
+mrcfile = "1.5.4"
+msgpack = "1.2.2"
+multidict = "6.8.0"
+networkx = "3.6.1"
+numpy = "1.26.4"
+openmm = "8.5.1"
+opt-einsum = "3.4.0"
+pandas = "2.3.3"
+pillow = "12.3.0"
+pluggy = "1.6.0"
+propcache = "0.5.2"
+psutil = "7.2.2"
+pygments = "2.21.0"
+pyparsing = "3.3.2"
+pytest = "8.4.2"
+pytest-xdist = "3.8.0"
+python-dateutil = "2.9.0"
+pytz = "2026.3"
+pyyaml = "6.0.2"
+rdkit = "2024.9.6"
+requests = "2.34.2"
+scipy = "1.17.1"
+sella = "2.3.5"
+six = "1.17.0"
+smmap = "5.0.3"
+sympy = "1.13.1"
+threadpoolctl = "3.6.0"
+torch = {version = "2.6.0", extras = ["cpu"]}
+torch-geometric = "2.6.1"
+tqdm = "4.67.3"
+typing-extensions = "4.16.0"
+tzdata = "2026.3"
+urllib3 = "2.7.0"
+velocityverletplugin = "1.1.0"
+yarl = "1.24.5"
 
-[tool.setuptools.packages.find]
-include = ["byteff2*", "bytemol*"]
-exclude = ["byteff2.tests*"]
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+pytest-xdist = "^3.8.0"
 
-[tool.setuptools.package-data]
-# Trained model weights and configs shipped with the package.
-"byteff2" = [
-    "trained_models/*",
-    "valid_data/*",
-]
+[tool.poetry.extras]
+packmol = ["packmol"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
