@@ -1,0 +1,25 @@
+; ITP file created by ByteFF-ML, 2026-09-15 21:28:11.271235
+
+[ defaults ]
+;     nbfunc   comb-rule   gen-pairs     fudgeLJ     fudgeQQ
+           1           2         yes  0.50000000  0.50000000
+
+#include "TFSI.itp"
+#include "FSI.itp"
+#include "EMIM.itp"
+#include "BMIM.itp"
+
+#include "TFSI.atp"
+#include "FSI.atp"
+#include "EMIM.atp"
+#include "BMIM.atp"
+
+[ system ]
+Full System
+
+[ molecules ]
+;molecule            nmols
+ TFSI                   17
+ FSI                    17
+ EMIM                   17
+ BMIM                   17

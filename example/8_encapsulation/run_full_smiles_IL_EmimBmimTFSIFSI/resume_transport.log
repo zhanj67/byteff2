@@ -1,0 +1,61 @@
+[2026-09-16 21:18:55 PID 610919] INFO component order: ['TFSI', 'FSI', 'EMIM', 'BMIM']
+[2026-09-16 21:18:55 PID 610919] INFO box (nm): 2.39531 2.39531 2.39531
+[2026-09-16 21:18:55 PID 610919] INFO s12: 0.1690015023721859, disp_damping: 120.0
+6*A*exp(B*(1-r/rvdw))-C6/rvdw^6/(120.0+(r/rvdw)^6)+(0.1690015023721859/r)^12-CTE*exp(-(CTL*r/rvdw)^3)/r^4 ; A=sqrt(A1*A2); B=sqrt(B1*B2); rvdw=(rvdw1+rvdw2)/2; C6=sqrt(C61*C62); CTE=sqrt(CTE1*CTE2); CTL=sqrt(CTL1*CTL2)
+[2026-09-16 21:18:55 PID 610919] INFO molecules [('TFSI', 17), ('FSI', 17), ('EMIM', 17), ('BMIM', 17)]
+[2026-09-16 21:18:55 PID 610919] INFO use PME
+[2026-09-16 21:18:55 PID 610919] INFO use long range correction
+[2026-09-16 21:18:55 PID 610919] INFO amoeba force num multipoles 1156
+[2026-09-16 21:18:55 PID 610919] INFO amoeba force nonbonded method 1
+[2026-09-16 21:18:55 PID 610919] INFO nonequ run
+[2026-09-16 21:18:55 PID 610919] INFO system force HarmonicBondForce, group 0
+[2026-09-16 21:18:55 PID 610919] INFO system force HarmonicAngleForce, group 0
+[2026-09-16 21:18:55 PID 610919] INFO system force PeriodicTorsionForce, group 0
+[2026-09-16 21:18:55 PID 610919] INFO system force CMMotionRemover, group 0
+[2026-09-16 21:18:55 PID 610919] INFO system force AmoebaMultipoleForce, group 1
+[2026-09-16 21:18:55 PID 610919] INFO system force CustomNonbondedForce, group 1
+[2026-09-16 21:18:55 PID 610919] INFO system force CustomBondForce, group 0
+CUDA modules for velocity-Verlet-middle integrator created
+    NUM_ATOMS: 1156, PADDED_NUM_ATOMS: 1184
+    Num Drude pairs: 0, Drude hardwall distance: 0 nm
+    Num thread blocks: 276, Thread block size: 64
+CUDA modules for Nose-Hoover thermostat created
+    Num molecules in NH thermostat: 68 / 68
+    Num normal particles: 1156, Num Drude pairs: 0
+    Real T: 298 K, Drude T: 298 K
+    Real coupling frequency: 1 /ps, Drude coupling frequency: 100 /ps
+    Num NH chain: 3, Loops per NH step: 3
+    Use COM temperature group: 0
+    DOF[0]: 3465, NkbT[0]: 8585.26, etaMass[0]: 8585.26
+CUDA modules for CosineAccelerateModifier created
+    Cosine acceleration strength: 0.02 nm/ps^2
+[2026-09-16 21:18:57 PID 610919] INFO Running nonequ
+[2026-09-16 21:53:20 PID 610919] INFO nonequ done
+[2026-09-16 21:53:20 PID 610919] INFO post processing transport protocol
+[2026-09-16 21:53:20 PID 610919] INFO viscosity: 38.548
+[2026-09-16 21:53:20 PID 610919] INFO Inferred cubic box length [angstrom]: 23.953117592252767
+[2026-09-16 21:53:20 PID 610919] INFO Use frames: 19800
+[2026-09-16 21:53:21 PID 610919] INFO msd_self: [0.21111830055466646, 0.25678376058789837, 0.2618798878265603, 0.23323235922017932]
+[2026-09-16 21:53:21 PID 610919] INFO conductivity: 3.753777453733021
+{
+  "cubic_box_length_unit": "angstrom",
+  "cubic_box_length": 23.953117592252767,
+  "conductivity_unit": "mS/cm",
+  "conductivity_onsager": 3.753777453733021,
+  "conductivity_NE": 5.4947789587917075,
+  "diffusivity_unit": "10^-10 m^2/s",
+  "Dself_inf": [
+    0.21111830055466646,
+    0.25678376058789837,
+    0.2618798878265603,
+    0.23323235922017932
+  ],
+  "viscosity": 38.54840741469261,
+  "components": [
+    "TFSI",
+    "FSI",
+    "EMIM",
+    "BMIM"
+  ]
+}
+summary.json updated
