@@ -1,0 +1,22 @@
+{
+  "protocol": "Density",
+  "params_dir": "run_anion_as_smiles_in_ECDMCEMC/density_params",
+  "output_dir": "run_anion_as_smiles_in_ECDMCEMC/density_results",
+  "working_dir": "run_anion_as_smiles_in_ECDMCEMC/density_working_dir",
+  "temperature": 298,
+  "natoms": 4556,
+  "components": {
+    "EC": 136,
+    "DMC": 102,
+    "EMC": 102,
+    "LI": 34,
+    "FTA": 34
+  },
+  "smiles": {
+    "EC": "O=C1OCCO1",
+    "DMC": "COC(=O)OC",
+    "EMC": "CCOC(=O)OC",
+    "LI": "[Li+]",
+    "FTA": "O=S(=O)(F)[N-]S(=O)(=O)C(F)(F)F"
+  }
+}
