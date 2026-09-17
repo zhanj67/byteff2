@@ -1,0 +1,59 @@
+{
+  "solvent": "EC/DMC/EMC",
+  "solvents": [
+    "EC",
+    "DMC",
+    "EMC"
+  ],
+  "solvent_ratio": [
+    4.0,
+    3.0,
+    3.0
+  ],
+  "anion": "FTA",
+  "cation": "LI",
+  "li_count": 34,
+  "salt_to_solvent_ratio": 0.1,
+  "components": {
+    "EC": 136,
+    "DMC": 102,
+    "EMC": 102,
+    "LI": 34,
+    "FTA": 34
+  },
+  "temperature": 298.0,
+  "custom_smiles": {
+    "FTA": "O=S(=O)(F)[N-]S(=O)(=O)C(F)(F)F"
+  },
+  "results": {
+    "density": {
+      "density": 1.2690928159582302,
+      "density_std": 0.0005482057102347811
+    },
+    "transport": {
+      "cubic_box_length_unit": "angstrom",
+      "cubic_box_length": 37.30123908132916,
+      "conductivity_unit": "mS/cm",
+      "conductivity_onsager": 10.23414872899538,
+      "conductivity_NE": 15.042502090393526,
+      "diffusivity_unit": "10^-10 m^2/s",
+      "Dself_inf": [
+        3.995237302144496,
+        3.763303633434629,
+        3.024891032978355,
+        2.587670121915851,
+        1.9047143475535004
+      ],
+      "viscosity": 3.6965638882693836,
+      "components": [
+        "EC",
+        "DMC",
+        "EMC",
+        "FTA",
+        "LI"
+      ]
+    },
+    "conductivity": 10.23414872899538,
+    "viscosity": 3.6965638882693836
+  }
+}
