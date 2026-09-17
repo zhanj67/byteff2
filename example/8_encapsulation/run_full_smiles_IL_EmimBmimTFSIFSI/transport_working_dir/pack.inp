@@ -1,0 +1,24 @@
+tolerance 2.0
+filetype xyz
+output solvent_salt.xyz
+seed -1
+
+structure TFSI.xyz
+  number 17
+  inside box 1.000 1.000 1.000 26.200 26.200 26.200
+end structure
+
+structure FSI.xyz
+  number 17
+  inside box 1.000 1.000 1.000 26.200 26.200 26.200
+end structure
+
+structure EMIM.xyz
+  number 17
+  inside box 1.000 1.000 1.000 26.200 26.200 26.200
+end structure
+
+structure BMIM.xyz
+  number 17
+  inside box 1.000 1.000 1.000 26.200 26.200 26.200
+end structure

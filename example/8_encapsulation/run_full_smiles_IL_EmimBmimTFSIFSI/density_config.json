@@ -1,0 +1,20 @@
+{
+  "protocol": "Density",
+  "params_dir": "run_full_smiles_IL_EmimBmimTFSIFSI/density_params",
+  "output_dir": "run_full_smiles_IL_EmimBmimTFSIFSI/density_results",
+  "working_dir": "run_full_smiles_IL_EmimBmimTFSIFSI/density_working_dir",
+  "temperature": 298,
+  "natoms": 1156,
+  "components": {
+    "EMIM": 17,
+    "BMIM": 17,
+    "TFSI": 17,
+    "FSI": 17
+  },
+  "smiles": {
+    "EMIM": "CCn1cc[n+](C)c1",
+    "BMIM": "CCCCn1cc[n+](C)c1",
+    "TFSI": "O=S(=O)([N-]S(=O)(=O)C(F)(F)F)C(F)(F)F",
+    "FSI": "O=S(=O)(F)[N-]S(=O)(=O)F"
+  }
+}

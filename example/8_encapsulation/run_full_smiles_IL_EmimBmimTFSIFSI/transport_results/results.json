@@ -1,0 +1,21 @@
+{
+  "cubic_box_length_unit": "angstrom",
+  "cubic_box_length": 23.953117592252767,
+  "conductivity_unit": "mS/cm",
+  "conductivity_onsager": 3.753777453733021,
+  "conductivity_NE": 5.4947789587917075,
+  "diffusivity_unit": "10^-10 m^2/s",
+  "Dself_inf": [
+    0.21111830055466646,
+    0.25678376058789837,
+    0.2618798878265603,
+    0.23323235922017932
+  ],
+  "viscosity": 38.54840741469261,
+  "components": [
+    "TFSI",
+    "FSI",
+    "EMIM",
+    "BMIM"
+  ]
+}
