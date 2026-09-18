@@ -1,0 +1,18 @@
+{
+  "protocol": "Density",
+  "params_dir": "run_full_electrolyte_by_smiles/density_params",
+  "output_dir": "run_full_electrolyte_by_smiles/density_results",
+  "working_dir": "run_full_electrolyte_by_smiles/density_working_dir",
+  "temperature": 298,
+  "natoms": 3360,
+  "components": {
+    "SL": 180,
+    "LI": 60,
+    "TfN": 60
+  },
+  "smiles": {
+    "SL": "O=S1(=O)CCCC1",
+    "LI": "[Li+]",
+    "TfN": "N#C[N-]S(=O)(=O)C(F)(F)F"
+  }
+}

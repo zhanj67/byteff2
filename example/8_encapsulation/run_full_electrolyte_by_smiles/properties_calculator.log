@@ -1,0 +1,133 @@
+2026-09-16 23:16:23 - INFO - ================================================================================
+2026-09-16 23:16:23 - INFO - PropertiesCalculator Initialization [0%]
+2026-09-16 23:16:23 - INFO - ================================================================================
+2026-09-16 23:16:23 - INFO -   ✓ Solvent: SL, Anion: TfN, Li count: 60
+2026-09-16 23:16:23 - INFO - Components: {'SL': 180, 'LI': 60, 'TfN': 60} (salt:solvent 0.3333, solvent ratio 1)
+2026-09-16 23:16:23 - INFO -   ✓ Components: {'SL': 180, 'LI': 60, 'TfN': 60}
+2026-09-16 23:16:23 - INFO -   ✓ Working directory: run_full_electrolyte_by_smiles
+2026-09-16 23:16:23 - INFO - ================================================================================
+2026-09-16 23:16:23 - INFO - Starting Property Calculations: density, viscosity, conductivity [10%]
+2026-09-16 23:16:23 - INFO - ================================================================================
+2026-09-16 23:16:23 - INFO -   ✓ Calculating density...
+2026-09-16 23:16:23 - INFO - Saved config to run_full_electrolyte_by_smiles/density_config.json
+2026-09-16 23:16:23 - INFO - Calculating density...
+2026-09-16 23:16:23 - INFO - Running DensityProtocol
+2026-09-16 23:16:23 - INFO - running density protocol
+2026-09-16 23:16:23 - INFO - use a=0.39 for polarization solver
+2026-09-16 23:16:09 - INFO - generating force field params for SL
+2026-09-16 23:16:09 - INFO - Writing itp: run_full_electrolyte_by_smiles/density_params/SL.itp
+2026-09-16 23:16:09 - INFO - Writing atp: run_full_electrolyte_by_smiles/density_params/SL.atp
+2026-09-16 23:16:09 - INFO - generating force field params for LI
+2026-09-16 23:16:09 - INFO - Writing itp: run_full_electrolyte_by_smiles/density_params/LI.itp
+2026-09-16 23:16:09 - INFO - Writing atp: run_full_electrolyte_by_smiles/density_params/LI.atp
+2026-09-16 23:16:09 - INFO - generating force field params for TfN
+2026-09-16 23:16:09 - INFO - Writing itp: run_full_electrolyte_by_smiles/density_params/TfN.itp
+2026-09-16 23:16:09 - INFO - Writing atp: run_full_electrolyte_by_smiles/density_params/TfN.atp
+2026-09-16 23:16:09 - INFO - building system for dict_keys(['SL', 'LI', 'TfN'])
+2026-09-16 23:16:10 - INFO - s12: 0.1690015023721859, disp_damping: 120.0
+2026-09-16 23:16:10 - INFO - molecules [('SL', 180), ('TfN', 60), ('LI', 60)]
+2026-09-16 23:16:10 - INFO - use PME
+2026-09-16 23:16:10 - INFO - use long range correction
+2026-09-16 23:16:10 - INFO - amoeba force num multipoles 3360
+2026-09-16 23:16:10 - INFO - amoeba force nonbonded method 1
+2026-09-16 23:16:10 - INFO - system force HarmonicBondForce, group 0
+2026-09-16 23:16:10 - INFO - system force HarmonicAngleForce, group 0
+2026-09-16 23:16:10 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-16 23:16:10 - INFO - system force CMMotionRemover, group 0
+2026-09-16 23:16:10 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-16 23:16:10 - INFO - system force CustomNonbondedForce, group 1
+2026-09-16 23:16:10 - INFO - system force CustomBondForce, group 0
+2026-09-16 23:16:10 - INFO - system force MonteCarloBarostat, group 0
+2026-09-16 23:16:12 - INFO - Minimizing energy
+2026-09-16 23:16:15 - INFO - Running npt
+2026-09-16 23:22:26 - INFO - npt done
+2026-09-16 23:22:26 - INFO - Finished running density protocol
+2026-09-16 23:22:26 - INFO - {'density': 1.4268576132494661, 'density_std': 0.000713122782792544}
+2026-09-16 23:22:26 - INFO -     Density                       :     1.426858 g/mL
+2026-09-16 23:22:26 - INFO -   ✓ Calculating transport properties...
+2026-09-16 23:22:26 - INFO - Saved config to run_full_electrolyte_by_smiles/transport_config.json
+2026-09-16 23:22:26 - INFO - Calculating conductivity and viscosity...
+2026-09-16 23:22:26 - INFO - Running TransportProtocol
+2026-09-16 23:22:26 - INFO - running transport protocol
+2026-09-16 23:22:26 - INFO - use a=0.39 for polarization solver
+2026-09-16 23:22:27 - INFO - generating force field params for SL
+2026-09-16 23:22:27 - INFO - Writing itp: run_full_electrolyte_by_smiles/transport_params/SL.itp
+2026-09-16 23:22:27 - INFO - Writing atp: run_full_electrolyte_by_smiles/transport_params/SL.atp
+2026-09-16 23:22:27 - INFO - generating force field params for LI
+2026-09-16 23:22:27 - INFO - Writing itp: run_full_electrolyte_by_smiles/transport_params/LI.itp
+2026-09-16 23:22:27 - INFO - Writing atp: run_full_electrolyte_by_smiles/transport_params/LI.atp
+2026-09-16 23:22:27 - INFO - generating force field params for TfN
+2026-09-16 23:22:27 - INFO - Writing itp: run_full_electrolyte_by_smiles/transport_params/TfN.itp
+2026-09-16 23:22:27 - INFO - Writing atp: run_full_electrolyte_by_smiles/transport_params/TfN.atp
+2026-09-16 23:22:27 - INFO - building system for dict_keys(['SL', 'LI', 'TfN'])
+2026-09-16 23:22:28 - INFO - s12: 0.1690015023721859, disp_damping: 120.0
+2026-09-16 23:22:28 - INFO - molecules [('SL', 180), ('TfN', 60), ('LI', 60)]
+2026-09-16 23:22:28 - INFO - use PME
+2026-09-16 23:22:28 - INFO - use long range correction
+2026-09-16 23:22:28 - INFO - amoeba force num multipoles 3360
+2026-09-16 23:22:28 - INFO - amoeba force nonbonded method 1
+2026-09-16 23:22:28 - INFO - npt run
+2026-09-16 23:22:29 - INFO - system force HarmonicBondForce, group 0
+2026-09-16 23:22:29 - INFO - system force HarmonicAngleForce, group 0
+2026-09-16 23:22:29 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-16 23:22:29 - INFO - system force CMMotionRemover, group 0
+2026-09-16 23:22:29 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-16 23:22:29 - INFO - system force CustomNonbondedForce, group 1
+2026-09-16 23:22:29 - INFO - system force CustomBondForce, group 0
+2026-09-16 23:22:29 - INFO - system force MonteCarloBarostat, group 0
+2026-09-16 23:22:29 - INFO - Minimizing energy
+2026-09-16 23:22:32 - INFO - Running npt
+2026-09-17 03:29:00 - INFO - npt done
+2026-09-17 03:29:00 - INFO - scale box by 0.999
+2026-09-17 03:29:00 - INFO - nvt run
+2026-09-17 03:29:00 - INFO - system force HarmonicBondForce, group 0
+2026-09-17 03:29:00 - INFO - system force HarmonicAngleForce, group 0
+2026-09-17 03:29:00 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-17 03:29:00 - INFO - system force CMMotionRemover, group 0
+2026-09-17 03:29:00 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-17 03:29:00 - INFO - system force CustomNonbondedForce, group 1
+2026-09-17 03:29:00 - INFO - system force CustomBondForce, group 0
+2026-09-17 03:29:00 - INFO - Running nvt
+2026-09-17 11:51:37 - INFO - nvt done
+2026-09-17 11:51:37 - INFO - nonequ run
+2026-09-17 11:51:38 - INFO - system force HarmonicBondForce, group 0
+2026-09-17 11:51:38 - INFO - system force HarmonicAngleForce, group 0
+2026-09-17 11:51:38 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-17 11:51:38 - INFO - system force CMMotionRemover, group 0
+2026-09-17 11:51:38 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-17 11:51:38 - INFO - system force CustomNonbondedForce, group 1
+2026-09-17 11:51:38 - INFO - system force CustomBondForce, group 0
+2026-09-17 11:51:39 - INFO - Running nonequ
+2026-09-17 12:41:37 - INFO - nonequ done
+2026-09-17 12:41:37 - INFO - post processing transport protocol
+2026-09-17 12:41:37 - INFO - viscosity: 531.865
+2026-09-17 12:41:39 - INFO - Inferred cubic box length [angstrom]: 33.47500259852502
+2026-09-17 12:41:40 - INFO - Use frames: 19800
+2026-09-17 12:41:41 - INFO - msd_self: [0.07683532042443461, 0.05182469227286107, 0.06295869259470802]
+2026-09-17 12:41:41 - INFO - conductivity: 0.44163373593518684
+2026-09-17 12:41:41 - INFO -     Conductivity (Onsager)        :     0.441634 mS/cm
+2026-09-17 12:41:41 - INFO -     Viscosity                     :   531.864887 cP
+2026-09-17 12:41:41 - INFO - ================================================================================
+2026-09-17 12:41:41 - INFO - Calculation Complete [100%]
+2026-09-17 12:41:41 - INFO - ================================================================================
+2026-09-17 12:41:41 - INFO -   ✓ Saved summary to run_full_electrolyte_by_smiles/summary.json
+2026-09-17 12:41:41 - INFO - ================================================================================
+2026-09-17 12:41:41 - INFO - CALCULATION SUMMARY
+2026-09-17 12:41:41 - INFO - ================================================================================
+2026-09-17 12:41:41 - INFO - 
+System Composition:
+2026-09-17 12:41:41 - INFO -   Solvent                       : SL
+2026-09-17 12:41:41 - INFO -   Solvent Ratio                 : 1
+2026-09-17 12:41:41 - INFO -   Anion                         : TfN
+2026-09-17 12:41:41 - INFO -   Cation                        : LI
+2026-09-17 12:41:41 - INFO -   Li Count                      : 60
+2026-09-17 12:41:41 - INFO -   Salt:Solvent Ratio            : 1:3
+2026-09-17 12:41:41 - INFO - 
+Simulation Parameters:
+2026-09-17 12:41:41 - INFO -   Temperature                   : 298.0 K
+2026-09-17 12:41:41 - INFO -   Components                    : {'SL': 180, 'LI': 60, 'TfN': 60}
+2026-09-17 12:41:41 - INFO - 
+Calculated Properties:
+2026-09-17 12:41:41 - INFO -   Density (g/mL)                : 1.426858
+2026-09-17 12:41:41 - INFO -   Conductivity (mS/cm)          : 0.441634
+2026-09-17 12:41:41 - INFO -   Viscosity (cP)                : 531.864887

@@ -1,0 +1,50 @@
+{
+  "solvent": "SL",
+  "solvents": [
+    "SL"
+  ],
+  "solvent_ratio": [
+    1.0
+  ],
+  "anion": "TfN",
+  "cation": "LI",
+  "li_count": 60,
+  "salt_to_solvent_ratio": 0.3333333333333333,
+  "components": {
+    "SL": 180,
+    "LI": 60,
+    "TfN": 60
+  },
+  "temperature": 298.0,
+  "custom_smiles": {
+    "SL": "O=S1(=O)CCCC1",
+    "TfN": "N#C[N-]S(=O)(=O)C(F)(F)F"
+  },
+  "results": {
+    "density": {
+      "density": 1.4268576132494661,
+      "density_std": 0.000713122782792544
+    },
+    "transport": {
+      "cubic_box_length_unit": "angstrom",
+      "cubic_box_length": 33.47500259852502,
+      "conductivity_unit": "mS/cm",
+      "conductivity_onsager": 0.44163373593518684,
+      "conductivity_NE": 1.0991341708121947,
+      "diffusivity_unit": "10^-10 m^2/s",
+      "Dself_inf": [
+        0.07683532042443461,
+        0.05182469227286107,
+        0.06295869259470802
+      ],
+      "viscosity": 531.8648869192169,
+      "components": [
+        "SL",
+        "TfN",
+        "LI"
+      ]
+    },
+    "conductivity": 0.44163373593518684,
+    "viscosity": 531.8648869192169
+  }
+}
