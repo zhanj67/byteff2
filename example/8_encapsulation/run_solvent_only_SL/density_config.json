@@ -1,0 +1,14 @@
+{
+  "protocol": "Density",
+  "params_dir": "run_solvent_only_SL/density_params",
+  "output_dir": "run_solvent_only_SL/density_results",
+  "working_dir": "run_solvent_only_SL/density_working_dir",
+  "temperature": 298,
+  "natoms": 5100,
+  "components": {
+    "SL": 340
+  },
+  "smiles": {
+    "SL": "O=S1(=O)CCCC1"
+  }
+}

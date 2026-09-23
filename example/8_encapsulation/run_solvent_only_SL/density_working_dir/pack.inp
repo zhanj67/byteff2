@@ -1,0 +1,9 @@
+tolerance 2.0
+filetype xyz
+output solvent_salt.xyz
+seed -1
+
+structure SL.xyz
+  number 340
+  inside box 1.000 1.000 1.000 41.200 41.200 41.200
+end structure

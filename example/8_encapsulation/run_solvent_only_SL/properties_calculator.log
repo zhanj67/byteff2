@@ -1,0 +1,162 @@
+2026-09-17 20:13:52 - INFO - ================================================================================
+2026-09-17 20:13:52 - INFO - PropertiesCalculator Initialization [0%]
+2026-09-17 20:13:52 - INFO - ================================================================================
+2026-09-17 20:13:52 - INFO -   ✓ Solvent: SL, Anion: None, Li count: 0
+2026-09-17 20:13:52 - INFO - Components: {'SL': 340} (pure solvent, no salt)
+2026-09-17 20:13:52 - INFO -   ✓ Components: {'SL': 340}
+2026-09-17 20:13:52 - INFO -   ✓ Working directory: run_solvent_only_SL
+2026-09-17 20:13:52 - INFO - ================================================================================
+2026-09-17 20:13:52 - INFO - Starting Property Calculations: density, viscosity, dielectric [10%]
+2026-09-17 20:13:52 - INFO - ================================================================================
+2026-09-17 20:13:52 - INFO -   ✓ Calculating density...
+2026-09-17 20:13:52 - INFO - Saved config to run_solvent_only_SL/density_config.json
+2026-09-17 20:13:52 - INFO - Calculating density...
+2026-09-17 20:13:52 - INFO - Running DensityProtocol
+2026-09-17 20:13:52 - INFO - running density protocol
+2026-09-17 20:13:52 - INFO - use a=0.39 for polarization solver
+2026-09-17 20:13:53 - INFO - generating force field params for SL
+2026-09-17 20:13:53 - INFO - Writing itp: run_solvent_only_SL/density_params/SL.itp
+2026-09-17 20:13:53 - INFO - Writing atp: run_solvent_only_SL/density_params/SL.atp
+2026-09-17 20:13:53 - INFO - building system for dict_keys(['SL'])
+2026-09-17 20:13:55 - INFO - s12: 0.1690015023721859, disp_damping: 120.0
+2026-09-17 20:13:55 - INFO - molecules [('SL', 340)]
+2026-09-17 20:13:55 - INFO - use PME
+2026-09-17 20:13:55 - INFO - use long range correction
+2026-09-17 20:13:55 - INFO - amoeba force num multipoles 5100
+2026-09-17 20:13:55 - INFO - amoeba force nonbonded method 1
+2026-09-17 20:13:56 - INFO - system force HarmonicBondForce, group 0
+2026-09-17 20:13:56 - INFO - system force HarmonicAngleForce, group 0
+2026-09-17 20:13:56 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-17 20:13:56 - INFO - system force CMMotionRemover, group 0
+2026-09-17 20:13:56 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-17 20:13:56 - INFO - system force CustomNonbondedForce, group 1
+2026-09-17 20:13:56 - INFO - system force CustomBondForce, group 0
+2026-09-17 20:13:56 - INFO - system force MonteCarloBarostat, group 0
+2026-09-17 20:13:58 - INFO - Minimizing energy
+2026-09-17 20:14:00 - INFO - Running npt
+2026-09-17 20:21:01 - INFO - npt done
+2026-09-17 20:21:01 - INFO - Finished running density protocol
+2026-09-17 20:21:01 - INFO - {'density': 1.2869424004730896, 'density_std': 0.0006566656590295792}
+2026-09-17 20:21:01 - INFO -     Density                       :     1.286942 g/mL
+2026-09-17 20:21:01 - INFO -   ✓ Calculating transport properties...
+2026-09-17 20:21:01 - INFO - Saved config to run_solvent_only_SL/transport_config.json
+2026-09-17 20:21:01 - INFO - Calculating conductivity and viscosity...
+2026-09-17 20:21:01 - INFO - Running TransportProtocol
+2026-09-17 20:21:01 - INFO - running transport protocol
+2026-09-17 20:21:01 - INFO - use a=0.39 for polarization solver
+2026-09-17 20:21:02 - INFO - generating force field params for SL
+2026-09-17 20:21:02 - INFO - Writing itp: run_solvent_only_SL/transport_params/SL.itp
+2026-09-17 20:21:02 - INFO - Writing atp: run_solvent_only_SL/transport_params/SL.atp
+2026-09-17 20:21:02 - INFO - building system for dict_keys(['SL'])
+2026-09-17 20:21:04 - INFO - s12: 0.1690015023721859, disp_damping: 120.0
+2026-09-17 20:21:05 - INFO - molecules [('SL', 340)]
+2026-09-17 20:21:05 - INFO - use PME
+2026-09-17 20:21:05 - INFO - use long range correction
+2026-09-17 20:21:05 - INFO - amoeba force num multipoles 5100
+2026-09-17 20:21:05 - INFO - amoeba force nonbonded method 1
+2026-09-17 20:21:05 - INFO - npt run
+2026-09-17 20:21:06 - INFO - system force HarmonicBondForce, group 0
+2026-09-17 20:21:06 - INFO - system force HarmonicAngleForce, group 0
+2026-09-17 20:21:06 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-17 20:21:06 - INFO - system force CMMotionRemover, group 0
+2026-09-17 20:21:06 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-17 20:21:06 - INFO - system force CustomNonbondedForce, group 1
+2026-09-17 20:21:06 - INFO - system force CustomBondForce, group 0
+2026-09-17 20:21:06 - INFO - system force MonteCarloBarostat, group 0
+2026-09-17 20:21:06 - INFO - Minimizing energy
+2026-09-17 20:21:08 - INFO - Running npt
+2026-09-18 01:01:31 - INFO - npt done
+2026-09-18 01:01:32 - INFO - scale box by 0.996
+2026-09-18 01:01:32 - INFO - nvt run
+2026-09-18 01:01:33 - INFO - system force HarmonicBondForce, group 0
+2026-09-18 01:01:33 - INFO - system force HarmonicAngleForce, group 0
+2026-09-18 01:01:33 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-18 01:01:33 - INFO - system force CMMotionRemover, group 0
+2026-09-18 01:01:33 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-18 01:01:33 - INFO - system force CustomNonbondedForce, group 1
+2026-09-18 01:01:33 - INFO - system force CustomBondForce, group 0
+2026-09-18 01:01:33 - INFO - Running nvt
+2026-09-18 10:22:16 - INFO - nvt done
+2026-09-18 10:22:16 - INFO - nonequ run
+2026-09-18 10:22:17 - INFO - system force HarmonicBondForce, group 0
+2026-09-18 10:22:17 - INFO - system force HarmonicAngleForce, group 0
+2026-09-18 10:22:17 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-18 10:22:17 - INFO - system force CMMotionRemover, group 0
+2026-09-18 10:22:17 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-18 10:22:17 - INFO - system force CustomNonbondedForce, group 1
+2026-09-18 10:22:17 - INFO - system force CustomBondForce, group 0
+2026-09-18 10:22:18 - INFO - Running nonequ
+2026-09-18 11:17:30 - INFO - nonequ done
+2026-09-18 11:17:30 - INFO - post processing transport protocol
+2026-09-18 11:17:30 - INFO - viscosity: 13.919
+2026-09-18 11:17:34 - INFO - Inferred cubic box length [angstrom]: 37.50459677760996
+2026-09-18 11:17:34 - INFO - Use frames: 19800
+2026-09-18 11:17:37 - INFO - msd_self: [0.6926515506617378]
+2026-09-18 11:17:37 - INFO - conductivity: 0.0
+2026-09-18 11:17:37 - INFO -     Viscosity                     :    13.919498 cP
+2026-09-18 11:17:37 - INFO -   ✓ Calculating dielectric constant...
+2026-09-18 11:17:37 - INFO - Saved config to run_solvent_only_SL/dielectric_config.json
+2026-09-18 11:17:37 - INFO - Calculating dielectric constant...
+2026-09-18 11:17:37 - INFO - Running DielectricProtocol
+2026-09-18 11:17:37 - INFO - running dielectric protocol
+2026-09-18 11:17:38 - INFO - use a=0.39 for polarization solver
+2026-09-18 11:17:39 - INFO - generating force field params for SL
+2026-09-18 11:17:39 - INFO - Writing itp: run_solvent_only_SL/dielectric_params/SL.itp
+2026-09-18 11:17:39 - INFO - Writing atp: run_solvent_only_SL/dielectric_params/SL.atp
+2026-09-18 11:17:39 - INFO - building system for dict_keys(['SL'])
+2026-09-18 11:17:41 - INFO - s12: 0.1690015023721859, disp_damping: 120.0
+2026-09-18 11:17:42 - INFO - molecules [('SL', 340)]
+2026-09-18 11:17:42 - INFO - use PME
+2026-09-18 11:17:42 - INFO - use long range correction
+2026-09-18 11:17:42 - INFO - amoeba force num multipoles 5100
+2026-09-18 11:17:42 - INFO - amoeba force nonbonded method 1
+2026-09-18 11:17:42 - INFO - npt run
+2026-09-18 11:17:43 - INFO - system force HarmonicBondForce, group 0
+2026-09-18 11:17:43 - INFO - system force HarmonicAngleForce, group 0
+2026-09-18 11:17:43 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-18 11:17:43 - INFO - system force CMMotionRemover, group 0
+2026-09-18 11:17:43 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-18 11:17:43 - INFO - system force CustomNonbondedForce, group 1
+2026-09-18 11:17:43 - INFO - system force CustomBondForce, group 0
+2026-09-18 11:17:43 - INFO - system force MonteCarloBarostat, group 0
+2026-09-18 11:17:43 - INFO - Minimizing energy
+2026-09-18 11:17:45 - INFO - Running npt
+2026-09-18 13:36:25 - INFO - npt done
+2026-09-18 13:36:25 - INFO - scale box by 0.999
+2026-09-18 13:36:25 - INFO - nvt run with dipole recording
+2026-09-18 13:36:26 - INFO - system force HarmonicBondForce, group 0
+2026-09-18 13:36:26 - INFO - system force HarmonicAngleForce, group 0
+2026-09-18 13:36:26 - INFO - system force PeriodicTorsionForce, group 0
+2026-09-18 13:36:26 - INFO - system force CMMotionRemover, group 0
+2026-09-18 13:36:26 - INFO - system force AmoebaMultipoleForce, group 1
+2026-09-18 13:36:26 - INFO - system force CustomNonbondedForce, group 1
+2026-09-18 13:36:26 - INFO - system force CustomBondForce, group 0
+2026-09-18 13:36:26 - INFO - Running nvt
+2026-09-18 19:13:04 - INFO - nvt done
+2026-09-18 19:13:04 - INFO - post processing dielectric protocol
+2026-09-18 19:13:04 - INFO - {'dielectric': 46.893763386267494, 'volume': 52878.688733364135, 'correlation_time': 45.15811420583336, 'units': {'dielectric': 'dimensionless', 'volume': 'Angstrom^3', 'correlation_time': 'ps'}}
+2026-09-18 19:13:04 - INFO -     Dielectric Constant           :    46.893763
+2026-09-18 19:13:04 - INFO - ================================================================================
+2026-09-18 19:13:04 - INFO - Calculation Complete [100%]
+2026-09-18 19:13:04 - INFO - ================================================================================
+2026-09-18 19:13:04 - INFO -   ✓ Saved summary to run_solvent_only_SL/summary.json
+2026-09-18 19:13:04 - INFO - ================================================================================
+2026-09-18 19:13:04 - INFO - CALCULATION SUMMARY
+2026-09-18 19:13:04 - INFO - ================================================================================
+2026-09-18 19:13:04 - INFO - 
+System Composition:
+2026-09-18 19:13:04 - INFO -   Solvent                       : SL
+2026-09-18 19:13:04 - INFO -   Solvent Ratio                 : 1
+2026-09-18 19:13:04 - INFO -   Anion                         : None
+2026-09-18 19:13:04 - INFO -   Cation                        : LI
+2026-09-18 19:13:04 - INFO -   Li Count                      : 0
+2026-09-18 19:13:04 - INFO -   Salt:Solvent Ratio            : N/A (pure solvent)
+2026-09-18 19:13:04 - INFO - 
+Simulation Parameters:
+2026-09-18 19:13:04 - INFO -   Temperature                   : 298.0 K
+2026-09-18 19:13:04 - INFO -   Components                    : {'SL': 340}
+2026-09-18 19:13:04 - INFO - 
+Calculated Properties:
+2026-09-18 19:13:04 - INFO -   Density (g/mL)                : 1.286942
+2026-09-18 19:13:04 - INFO -   Viscosity (cP)                : 13.919498
+2026-09-18 19:13:04 - INFO -   Dielectric Constant           : 46.893763

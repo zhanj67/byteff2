@@ -1,0 +1,16 @@
+; ITP file created by ByteFF-ML, 2026-09-17 20:13:53.057525
+
+[ defaults ]
+;     nbfunc   comb-rule   gen-pairs     fudgeLJ     fudgeQQ
+           1           2         yes  0.50000000  0.50000000
+
+#include "SL.itp"
+
+#include "SL.atp"
+
+[ system ]
+Full System
+
+[ molecules ]
+;molecule            nmols
+ SL                    340

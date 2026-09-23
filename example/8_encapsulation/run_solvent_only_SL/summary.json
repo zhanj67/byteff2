@@ -1,0 +1,52 @@
+{
+  "solvent": "SL",
+  "solvents": [
+    "SL"
+  ],
+  "solvent_ratio": [
+    1.0
+  ],
+  "anion": null,
+  "cation": "LI",
+  "li_count": 0,
+  "salt_to_solvent_ratio": null,
+  "components": {
+    "SL": 340
+  },
+  "temperature": 298.0,
+  "custom_smiles": {
+    "SL": "O=S1(=O)CCCC1"
+  },
+  "results": {
+    "density": {
+      "density": 1.2869424004730896,
+      "density_std": 0.0006566656590295792
+    },
+    "transport": {
+      "cubic_box_length_unit": "angstrom",
+      "cubic_box_length": 37.50459677760996,
+      "conductivity_unit": "mS/cm",
+      "conductivity_onsager": 0.0,
+      "conductivity_NE": 0.0,
+      "diffusivity_unit": "10^-10 m^2/s",
+      "Dself_inf": [
+        0.6926515506617378
+      ],
+      "viscosity": 13.919498221233182,
+      "components": [
+        "SL"
+      ]
+    },
+    "viscosity": 13.919498221233182,
+    "dielectric": {
+      "dielectric": 46.893763386267494,
+      "volume": 52878.688733364135,
+      "correlation_time": 45.15811420583336,
+      "units": {
+        "dielectric": "dimensionless",
+        "volume": "Angstrom^3",
+        "correlation_time": "ps"
+      }
+    }
+  }
+}
