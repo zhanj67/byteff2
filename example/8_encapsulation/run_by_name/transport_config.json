@@ -1,0 +1,20 @@
+{
+  "protocol": "Transport",
+  "params_dir": "run_by_name/transport_params",
+  "output_dir": "run_by_name/transport_results",
+  "working_dir": "run_by_name/transport_working_dir",
+  "temperature": 298,
+  "natoms": 4862,
+  "components": {
+    "EC": 102,
+    "EMC": 238,
+    "LI": 34,
+    "PF6": 34
+  },
+  "smiles": {
+    "EC": "O=C1OCCO1",
+    "EMC": "CCOC(=O)OC",
+    "LI": "[Li+]",
+    "PF6": "F[P-](F)(F)(F)(F)F"
+  }
+}
