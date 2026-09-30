@@ -1,0 +1,259 @@
+{
+ "method": "gpu4pyscf ALMO-EDA2, wB97M-V/def2-TZVPD",
+ "units": "kcal/mol",
+ "reference": "example/1_training/example_data/example.h5 (Q-Chem EDA2)",
+ "results": [
+  {
+   "system": "AN_AN_0",
+   "natoms": 12,
+   "calc": {
+    "elec_int_energy": -17.93033882401082,
+    "cls_elec_int_energy": -8.364947473184015,
+    "disp_int_energy": -6.0374669903714935,
+    "frozen_int_energy": 5.08718475442847,
+    "polarization_int_energy": -1.1513179363159434,
+    "charge_transfer_int_energy": -1.1943182395898915,
+    "total_int_energy": 2.7415485785226354,
+    "elec_pauli_int_energy": 11.124651744799964
+   },
+   "ref": {
+    "charge_transfer_int_energy": -1.1943355640535371,
+    "cls_elec_int_energy": -8.365057361376673,
+    "disp_int_energy": -6.038360420650096,
+    "elec_int_energy": -17.930544933078394,
+    "elec_pauli_int_energy": 11.124832695984704,
+    "frozen_int_energy": 5.0864483747609945,
+    "min_dists": 2.723911775720536,
+    "polarization_int_energy": -1.1510516252390057,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": 2.741061185468451
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.0008934302786025583
+  },
+  {
+   "system": "DMC_PF6_0",
+   "natoms": 19,
+   "calc": {
+    "elec_int_energy": -2.0232332819346657,
+    "cls_elec_int_energy": -0.3663887100331502,
+    "disp_int_energy": -1.7872322205814941,
+    "frozen_int_energy": -1.2538609372300815,
+    "polarization_int_energy": -1.8016108432004307,
+    "charge_transfer_int_energy": -0.17725248956255704,
+    "total_int_energy": -3.2327242699930694,
+    "elec_pauli_int_energy": 0.5333712833514126
+   },
+   "ref": {
+    "charge_transfer_int_energy": -0.17727055449330784,
+    "cls_elec_int_energy": -0.36639579349904394,
+    "disp_int_energy": -1.787810707456979,
+    "elec_int_energy": -2.023279158699809,
+    "elec_pauli_int_energy": 0.5335325047801147,
+    "frozen_int_energy": -1.2542782026768642,
+    "min_dists": 2.8418085722707715,
+    "polarization_int_energy": -1.8029158699808796,
+    "preparation_int_energy": -0.0,
+    "total_int_energy": -3.2344646271510515
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.001740357157982153
+  },
+  {
+   "system": "DOL_FSI_0",
+   "natoms": 20,
+   "calc": {
+    "elec_int_energy": -3.2663132413462637,
+    "cls_elec_int_energy": 0.3294403635409975,
+    "disp_int_energy": -3.8718921820787537,
+    "frozen_int_energy": -0.43377142326624224,
+    "polarization_int_energy": -1.2760883674015742,
+    "charge_transfer_int_energy": -0.5192123415141725,
+    "total_int_energy": -2.229072132181989,
+    "elec_pauli_int_energy": 3.438120758812511
+   },
+   "ref": {
+    "charge_transfer_int_energy": -0.5195028680688336,
+    "cls_elec_int_energy": 0.3294694072657744,
+    "disp_int_energy": -3.870387189292543,
+    "elec_int_energy": -3.2663240917782024,
+    "elec_pauli_int_energy": 3.4384321223709366,
+    "frozen_int_energy": -0.43197896749521986,
+    "min_dists": 2.6627659921881426,
+    "polarization_int_energy": -1.2756692160611853,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": -2.2271271510516253
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.0019449811303635656
+  },
+  {
+   "system": "EC_EC_0",
+   "natoms": 20,
+   "calc": {
+    "elec_int_energy": -0.37410216361508397,
+    "cls_elec_int_energy": 1.5998827831921894,
+    "disp_int_energy": -2.9935899019918515,
+    "frozen_int_energy": 2.360749915173255,
+    "polarization_int_energy": -0.74211484562178,
+    "charge_transfer_int_energy": -0.5712567169763928,
+    "total_int_energy": 1.0473783525750824,
+    "elec_pauli_int_energy": 5.354339817165107
+   },
+   "ref": {
+    "charge_transfer_int_energy": -0.5712476099426386,
+    "cls_elec_int_energy": 1.599904397705545,
+    "disp_int_energy": -2.993116634799235,
+    "elec_int_energy": -0.3740917782026768,
+    "elec_pauli_int_energy": 5.354660611854684,
+    "frozen_int_energy": 2.361567877629063,
+    "min_dists": 2.0650138188952485,
+    "polarization_int_energy": -0.7421128107074569,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": 1.0481835564053537
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.0008179624558080079
+  },
+  {
+   "system": "EC_LI_0",
+   "natoms": 11,
+   "calc": {
+    "elec_int_energy": 22.773709363337314,
+    "cls_elec_int_energy": 23.220540851586655,
+    "disp_int_energy": -2.866224449180803,
+    "frozen_int_energy": 70.52092656384421,
+    "polarization_int_energy": -35.39737702489981,
+    "charge_transfer_int_energy": -6.424645906881847,
+    "total_int_energy": 28.698903632062553,
+    "elec_pauli_int_energy": 73.38715101302502
+   },
+   "ref": {
+    "charge_transfer_int_energy": -6.4244980879541105,
+    "cls_elec_int_energy": 23.22081739961759,
+    "disp_int_energy": -2.866467495219885,
+    "elec_int_energy": 22.773972275334607,
+    "elec_pauli_int_energy": 73.3881931166348,
+    "frozen_int_energy": 70.52172562141492,
+    "min_dists": 1.503783700577435,
+    "polarization_int_energy": -35.3979206500956,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": 28.699330783938816
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.0010421036097767455
+  },
+  {
+   "system": "FEC_FEC_0",
+   "natoms": 20,
+   "calc": {
+    "elec_int_energy": -53.396542903636366,
+    "cls_elec_int_energy": -24.50989786192642,
+    "disp_int_energy": -14.69122302328391,
+    "frozen_int_energy": 30.006588952325036,
+    "polarization_int_energy": -4.776993389865672,
+    "charge_transfer_int_energy": -5.056620133657754,
+    "total_int_energy": 20.172975428801614,
+    "elec_pauli_int_energy": 44.69781197560895
+   },
+   "ref": {
+    "charge_transfer_int_energy": -5.056572657743786,
+    "cls_elec_int_energy": -24.51027724665392,
+    "disp_int_energy": -14.69118068833652,
+    "elec_int_energy": -53.397179732313575,
+    "elec_pauli_int_energy": 44.698279158699805,
+    "frozen_int_energy": 30.0071223709369,
+    "min_dists": 1.8335248559258555,
+    "polarization_int_energy": -4.7771271510516256,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": 20.173398661567877
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.0006368286772087117
+  },
+  {
+   "system": "FSI_LI_0",
+   "natoms": 10,
+   "calc": {
+    "elec_int_energy": -86.04036707295518,
+    "cls_elec_int_energy": -85.84807521524546,
+    "disp_int_energy": -0.2601701549474661,
+    "frozen_int_energy": -85.36955508958852,
+    "polarization_int_energy": -10.793552527322285,
+    "charge_transfer_int_energy": -0.5780222289854398,
+    "total_int_energy": -96.74112984589624,
+    "elec_pauli_int_energy": -85.10938493464107
+   },
+   "ref": {
+    "charge_transfer_int_energy": -0.57868068833652,
+    "cls_elec_int_energy": -85.84921128107075,
+    "disp_int_energy": -0.25920172084130016,
+    "elec_int_energy": -86.04151529636711,
+    "elec_pauli_int_energy": -85.1116395793499,
+    "frozen_int_energy": -85.37086520076483,
+    "min_dists": 2.677387270459376,
+    "polarization_int_energy": -10.79385755258126,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": -96.7434034416826
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.002273595786363103
+  },
+  {
+   "system": "PF6_LI_0",
+   "natoms": 8,
+   "calc": {
+    "elec_int_energy": -82.41436602685384,
+    "cls_elec_int_energy": -82.36342107497215,
+    "disp_int_energy": -0.0848266988831293,
+    "frozen_int_energy": -82.3125673493384,
+    "polarization_int_energy": -4.63595637802089,
+    "charge_transfer_int_energy": -0.27626402528861654,
+    "total_int_energy": -87.22478775264788,
+    "elec_pauli_int_energy": -82.22774065045525
+   },
+   "ref": {
+    "charge_transfer_int_energy": -0.27684034416826003,
+    "cls_elec_int_energy": -82.36453154875717,
+    "disp_int_energy": -0.08501434034416826,
+    "elec_int_energy": -82.41548757170172,
+    "elec_pauli_int_energy": -82.22801147227533,
+    "frozen_int_energy": -82.3130258126195,
+    "min_dists": 3.0529224130476753,
+    "polarization_int_energy": -4.635181644359465,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": -87.22507170172084
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.001121544847876521
+  },
+  {
+   "system": "PF6_PF6_0",
+   "natoms": 14,
+   "calc": {
+    "elec_int_energy": 49.749146168226304,
+    "cls_elec_int_energy": 67.27847019986564,
+    "disp_int_energy": -4.542755599891456,
+    "frozen_int_energy": 72.86813664317165,
+    "polarization_int_energy": -3.563537389694266,
+    "charge_transfer_int_energy": -0.33626390311868565,
+    "total_int_energy": 68.9683353503587,
+    "elec_pauli_int_energy": 77.4108922430631
+   },
+   "ref": {
+    "charge_transfer_int_energy": -0.3366873804971319,
+    "cls_elec_int_energy": 67.27901529636712,
+    "disp_int_energy": -4.5448613766730395,
+    "elec_int_energy": 49.749713193116634,
+    "elec_pauli_int_energy": 77.4118068833652,
+    "frozen_int_energy": 72.86692160611855,
+    "min_dists": 2.41360452290727,
+    "polarization_int_energy": -3.5631692160611856,
+    "preparation_int_energy": 0.0,
+    "total_int_energy": 68.96706500956023
+   },
+   "snapshot": 0,
+   "max_abs_diff": 0.0021057767815833017
+  }
+ ]
+}
