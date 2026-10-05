@@ -58,10 +58,90 @@ Mapping from gpu4pyscf output (kJ/mol) to Q-Chem EDA2 labels: `electrostatic`→
 | PF6_LI_0 | 8 | -82.414 / -82.415 | -82.228 / -82.228 | -0.085 / -0.085 | -4.636 / -4.635 | -0.276 / -0.277 | -87.225 / -87.225 | 0.0011 |
 | PF6_PF6_0 | 14 | 49.749 / 49.750 | 77.411 / 77.412 | -4.543 / -4.545 | -3.564 / -3.563 | -0.336 / -0.337 | 68.968 / 68.967 | 0.0021 |
 
-9 of 10 tested dimers succeed; every component agrees within 0.003 kcal/mol across neutral–neutral, cation–solvent, cation–anion and anion–anion pairs.
-
-Known limitation: **LI_LI_0 (Li⁺–Li⁺) fails** in gpu4pyscf with `Conjugate gradient for orbital hessian inverse in EDA orthogonal decomposition not converged!`. Q-Chem handles it (the reference value is 113.6 kcal/mol). Dimers made of bare Li⁺ ions need Q-Chem or a workaround.
-
 Environment notes:
 - Tested with `gpu4pyscf-cuda11x==1.4.3`, `cupy-cuda11x`, and `pyscf==2.9.0` on NVIDIA driver 515 (CUDA 11.7). Newer gpu4pyscf builds fail on this driver ("PTX was compiled with an unsupported toolchain"). pyscf 2.14 is incompatible with gpu4pyscf 1.4.3.
 - Cost: about 9 min for a 12-atom dimer on an RTX 3080 that other jobs were also using.
+
+### 1b. Generate Conformers without Q-Chem (gpu4pyscf)
+
+`generate_conf_gpu4pyscf.py` is a drop-in replacement for `generate_conf.py`: same arguments, same method (B3LYP-D3BJ/def2-SVPD, geomeTRIC, GAU convergence), and the same output `<mol_name>.xyz`. Single atoms (e.g. `[Li+:1]`, `[Cl-:1]`) are written without optimization.
+
+```bash
+PYTHONPATH=$(git rev-parse --show-toplevel):${PYTHONPATH} python generate_conf_gpu4pyscf.py --mol_name ACT --mapped_smiles "[C:1]([C:2](=[O:3])[C:4]([H:8])([H:9])[H:10])([H:5])([H:6])[H:7]"
+```
+
+## Tutorial: new training data without Q-Chem (Cl⁻ pilot)
+
+`cl_pilot/` generates EDA training data for Cl⁻ paired with Emim⁺, Li⁺ and Cl⁻ (20 geometries per pair, 60 clusters) and packs it in the same format as `example/1_training/example_data/example.h5`. Each step is a script with its settings written inline; edit the constants at the top to make your own dataset. Run all steps from `cl_pilot/` with:
+
+```bash
+export PYTHONPATH=$(git rev-parse --show-toplevel):${PYTHONPATH}
+```
+
+**Step 1: monomers** (`step1_monomers.py` → `monomers/<NAME>.xyz`). List each monomer's atom-mapped SMILES; every atom, including H, needs a map number:
+
+```python
+MONOMERS = {
+    "EMIM": "[C:1]([C:2]([n+:3]1[c:4]([H:14])[c:5]([H:15])[n:6]([C:7]([H:16])([H:17])[H:18])[c:8]1[H:19])([H:12])[H:13])([H:9])([H:10])[H:11]",
+    "LI": "[Li+:1]",
+    "CL": "[Cl-:1]",
+}
+```
+
+To get a mapped SMILES from a plain SMILES:
+
+```python
+from rdkit import Chem
+m = Chem.AddHs(Chem.MolFromSmiles("CC[n+]1ccn(C)c1"))
+for a in m.GetAtoms():
+    a.SetAtomMapNum(a.GetIdx() + 1)
+print(Chem.MolToSmiles(m))
+```
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python step1_monomers.py
+```
+
+**Step 2: dimer geometries** (`step2_dimers.py` → `dimers/<M1>_<M2>/conf_*/`). Set `PAIRS` and `NCONFS`; it calls `generate_dimer.py` for each pair. For self-pairs (e.g. `("CL", "CL")`) the script writes a renamed copy `CL_B.xyz`, because `generate_dimer.py` would otherwise append both molecules into one file. `generate_dimer.py` always uses seed 42, so two pairs of single atoms get identical separations; use a different seed per pair for production data.
+
+```python
+NCONFS = 20
+PAIRS = [("CL", "EMIM"), ("CL", "LI"), ("CL", "CL")]
+```
+
+```bash
+python step2_dimers.py
+```
+
+**Step 3: EDA** (`step3_eda.py` → `conf_*/eda.json`). Spreads all `conf_*` folders across the GPUs listed in `GPUS` and calls `run_eda` from `calculate_eda_gpu4pyscf.py`. A failed geometry writes `{"error": ...}` instead of stopping the batch, and rerunning skips finished geometries. Run it detached, since it takes hours:
+
+```python
+GPUS = ["0", "1", "2"]
+PAIRS = ["CL_EMIM", "CL_LI", "CL_CL"]
+```
+
+```bash
+nohup python step3_eda.py > step3.log 2>&1 &
+grep -c '^DONE' step3.log; grep '^FAIL' step3.log
+```
+
+**Step 4: pack** (`step4_pack.py` → `packed/cl_pilot.{h5,json}`, `packed/meta.txt`). Writes one entry per pair (`<M1>_<M2>_0`) with the same keys as `example.h5`: `coords` (mol1 atoms then mol2), `min_dists`, and the nine `*_int_energy` arrays in kcal/mol. Failed geometries are skipped.
+
+```bash
+python step4_pack.py
+python ../../1_training/preprocess.py --conf preprocess_cl_pilot.yaml   # → processed_data/
+```
+
+**Pilot results** (60/60 clusters succeeded):
+
+| pair | geometries | total interaction energy (kcal/mol) | min distance (Å) |
+|---|---|---|---|
+| Cl⁻–Emim⁺ | 20 | −90.8 to +5.6 | 1.55–7.08 |
+| Cl⁻–Li⁺ | 20 | −147.2 to −34.6 | 1.56–9.61 |
+| Cl⁻–Cl⁻ | 20 | +34.4 to +345.3 | 1.56–9.61 |
+
+Geometries with very large forces (e.g. Cl⁻–Cl⁻ below 2 Å) are kept; the training loss down-weights them through `force_cutoff: [50, 80]`.
+
+**Throughput** (3 shared RTX 3080s): the EDA step dominates. A 20-atom cluster (Cl⁻–Emim⁺) takes about 33 min per GPU (29–43 min), so 1,000 such clusters take about 7.6 days on 3 GPUs. Single-atom pairs take about 2.5 min each. Cost rises steeply with cluster size.
+
+**Fine-tuning:** `example/1_training/train_cl_pilot.yaml` and `finetune_cl_pilot.py` fine-tune `optimal.pt` on `example.h5` plus this set. This is a pipeline demonstration only. With 60 clusters and equal dataset weights, the Cl⁻ loss dominated and the example-data validation loss rose from 4.49 to 10.64 over 40 epochs. A real run needs more Cl⁻ data, a smaller `loss_weight` for the Cl⁻ dataset, and held-out Cl⁻–cation entries for validation.
