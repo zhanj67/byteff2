@@ -145,3 +145,26 @@ Geometries with very large forces (e.g. Cl⁻–Cl⁻ below 2 Å) are kept; the 
 **Throughput** (3 shared RTX 3080s): the EDA step dominates. A 20-atom cluster (Cl⁻–Emim⁺) takes about 33 min per GPU (29–43 min), so 1,000 such clusters take about 7.6 days on 3 GPUs. Single-atom pairs take about 2.5 min each. Cost rises steeply with cluster size.
 
 **Fine-tuning:** `example/1_training/train_cl_pilot.yaml` and `finetune_cl_pilot.py` fine-tune `optimal.pt` on `example.h5` plus this set. This is a pipeline demonstration only. With 60 clusters and equal dataset weights, the Cl⁻ loss dominated and the example-data validation loss rose from 4.49 to 10.64 over 40 epochs. A real run needs more Cl⁻ data, a smaller `loss_weight` for the Cl⁻ dataset, and held-out Cl⁻–cation entries for validation.
+
+### Second example: sulfones (`sulfolane_pilot/`, DMS dimer)
+
+The same four scripts with only the constants changed; this shows the pipeline on a neutral solvent. Sulfur is already a supported element, so no model changes are needed. Step 1 now creates `monomers/` itself.
+
+```python
+# step1_monomers.py
+MONOMERS = {"DMS": "[C:1]([S:2]([C:3]([H:9])([H:10])[H:11])(=[O:4])=[O:5])([H:6])([H:7])[H:8]"}
+# step2_dimers.py
+NCONFS = 20
+PAIRS = [("DMS", "DMS")]
+# step3_eda.py
+PAIRS = ["DMS_DMS"]
+# step4_pack.py
+DATASET = "sulfolane_pilot"
+PAIRS = ["DMS_DMS"]
+```
+
+Result: 20/20 geometries succeeded; total interaction energy −1.7 to +35.8 kcal/mol at closest contacts of 1.67–5.38 Å, with dispersion down to −15.6 kcal/mol. Each 22-atom cluster took 27.8 min median (25.5–34.6) per shared RTX 3080, about 3.3 h for the batch on 3 GPUs. To add sulfolane (SL), 3-methyl sulfolane (MSL) and ethyl methyl sulfone (EMS), extend `MONOMERS` and `PAIRS`:
+
+- SL: `[O:1]=[S:2]1(=[O:3])[C:4]([H:8])([H:9])[C:5]([H:10])([H:11])[C:6]([H:12])([H:13])[C:7]1([H:14])[H:15]`
+- MSL: `[C:1]([C:2]1([H:12])[C:3]([H:13])([H:14])[C:4]([H:15])([H:16])[S:5](=[O:6])(=[O:7])[C:8]1([H:17])[H:18])([H:9])([H:10])[H:11]` (stereocenter unspecified)
+- EMS: `[C:1]([C:2]([S:3]([C:4]([H:12])([H:13])[H:14])(=[O:5])=[O:6])([H:10])[H:11])([H:7])([H:8])[H:9]`
